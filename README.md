@@ -13,7 +13,7 @@ Specific depends on Clojure 1.9 (or 1.8 with the clojure.spec backport). To add 
 ```clojure
 (defproject sample
   :dependencies [[org.clojure/clojure "1.9.0"]]
-  :profiles {:dev {:plugins [[com.benrady/specific "0.1.0"]]}})
+  :profiles {:dev {:plugins [[com.benrady/specific "0.0.1-SNAPSHOT"]]}})
 ```
 
 ## Usage
