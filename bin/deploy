@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 bindir=`dirname $0`
 
 if [[ ! -x `which gpg-agent` ]]; then
@@ -8,6 +10,6 @@ if [[ ! -x `which gpg-agent` ]]; then
 fi
 
 eval $(gpg-agent --daemon)
-gpg --quiet --batch --decrypt ~/.lein/credentials.clj.gpg
+gpg --quiet --batch --decrypt ~/.lein/credentials.clj.gpg > /dev/null
 $bindir/lein deploy clojars
 pkill gpg-agent
