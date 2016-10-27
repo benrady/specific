@@ -1,4 +1,4 @@
-(defproject com.benrady/specific "0.1.0-SNAPSHOT"
+(defproject com.benrady/specific "0.0.1-SNAPSHOT"
   :profiles {:dev 
              {:plugins [[com.jakemccrary/lein-test-refresh "0.17.0"]]
               :dependencies [[org.clojure/clojure "1.8.0"]
@@ -12,6 +12,12 @@
                            (pjstadig.humane-test-output/activate!)]}}
   :test-paths ["test"]
   :dependencies []
+  :license {:name "GNU Public License v2"
+            :url "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"}
+  :deploy-repositories [["snapshots" {:url "https://clojars.org/repo"
+                                      :username :gpg :password :gpg}]
+                        ["releases" {:url "https://clojars.org/repo"
+                                     :username :gpg :password :gpg}]]
   :test-refresh {:growl false
                  :notify-on-success false
                  :quiet true

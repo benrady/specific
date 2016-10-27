@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+bindir=`dirname $0`
+
+$bindir/lein deploy clojars
