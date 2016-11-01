@@ -1,4 +1,4 @@
-(defproject com.benrady/specific "0.0.3-SNAPSHOT"
+(defproject com.benrady/specific "0.0.4-SNAPSHOT"
   :url "https://github.com/benrady/specific"
   :description "Generate test doubles using clojure.spec"
   :profiles {:dev 
@@ -17,9 +17,9 @@
   :license {:name "GNU Public License v2"
             :url "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"}
   :deploy-repositories [["snapshots" {:url "https://clojars.org/repo"
-                                      :username :gpg :password :gpg}]
+                                      :username "benrady"}]
                         ["releases" {:url "https://clojars.org/repo"
-                                     :username :gpg :password :gpg}]]
+                                     :username "benrady"}]]
   :test-refresh {:growl false
                  :notify-on-success false
                  :quiet true
