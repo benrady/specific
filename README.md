@@ -21,11 +21,13 @@ _Specific_ depends on Clojure 1.9 (or 1.8 with the clojure.spec backport) and cl
 _Specific_ works best with functions that have clojure.spec definitions. You can include these definitions with your code under test, or you can just add them to your tests.
 
 ```clojure
+(ns sample)
+
 (defn some-fun [greeting & names]
   (spit "fun.txt" (apply str greeting ", " names)))
 
-(spec/fdef some-fun
-           :args (spec/+ string?)
+(clojure.spec/fdef some-fun
+           :args (clojure.spec/+ string?)
            :ret string?)
 ```
 
@@ -37,17 +39,27 @@ Mocking a function prevents the original function from being called, which is us
 
 ```clojure
   (testing "mock functions"
-    (with-mocks [some-fun]
+    (with-mocks [sample/some-fun]
 
-      (testing "reports an error if the arguments do not meet the specs "
-        (some-fun 3))
-        ;; expected:
-        ;; actual:
+      (testing "returns a value generated from the spec"
+        (is (string? (sample/some-fun ""))))
 
       (testing "tracks the arguments of each call"
-        (some-fun "hello")
-        (is (= [["hello"]] (calls some-fun))))))
+        (sample/some-fun "hello")
+        (is (= [["hello"]] (calls sample/some-fun))))))
 ```
+
+Invoking a mock with arguments that don't meet the spec will result in a failure being reported to the test runner
+
+```clojure
+  (testing "reports an error if the arguments do not meet the specs "
+    (some-fun 3))
+
+;; FAIL in (specific.core) (test_double.clj:8)
+;; mock functions tracks the arguments of each call
+;; expected: "Calls to specific.sample/some-fun to conform to (ifn?)"
+;;   actual: "Calls to specific.sample/some-fun were (3)"
+
 ### Stub Functions
 
 Stub functions are more leinent than mocks, not requiring the function to have a spec. This is useful when mocking out interactions with functions you did not write.
@@ -56,9 +68,9 @@ Stub functions are more leinent than mocks, not requiring the function to have a
   (testing "stub functions"
     (with-stubs [spit]
 
-      (testing "do not require specs"
-        (some-fun "test")
-        (assert-args spit ["flubber.txt" "test"]))))
+      (testing "doesn't need a spec to track calls"
+        (sample/some-fun "hello" "world")
+        (is (= [["fun.txt", "hello, world"]] (calls spit))))))
 ```
 
 ### Spy Functions
@@ -66,14 +78,9 @@ Stub functions are more leinent than mocks, not requiring the function to have a
 Spy functions call through to the original function, but still record the calls and enforce the constraints in the function's spec. You can make assertions about how the spy was invoked after it is called.
 
 ```clojure
-  (testing "spy functions"
-    (with-spies [some-fun]
-
-      (testing "calls the original function"
-        (some-fun "side effects!")
-        (is (= "side effects!" (slurp "fun.txt)))
-        (assert-args spit ["flubber.txt" "test"]))))
 ```
+
+### Matchers
 
 ### Generative Testing
 

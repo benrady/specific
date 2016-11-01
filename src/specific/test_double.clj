@@ -36,9 +36,11 @@
         calls (atom {})]
     (add-meta (comp (partial apply f) (partial add-call calls)) calls)))
 
-(defn stub-fn []
-  (let [calls (atom {})]
-    (add-meta (comp (constantly nil) (partial add-call calls)) calls)))
+(defn stub-fn
+  ([] (stub-fn nil))
+  ([retval]
+    (let [calls (atom {})]
+      (add-meta (comp (constantly retval) (partial add-call calls)) calls))))
 
 (defn mock-fn [f-sym]
   (let [fn-spec (spec/get-spec f-sym) 

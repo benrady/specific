@@ -1,11 +1,10 @@
-(ns specific.sample
-  (:require [clojure.spec :as spec]))
+(ns specific.sample)
 
 (defn some-fun [greeting & names]
-  (apply str greeting ", " names))
+  (spit "fun.txt" (apply str greeting ", " names)))
 
-(spec/fdef some-fun
-           :args (spec/+ string?)
+(clojure.spec/fdef some-fun
+           :args (clojure.spec/+ string?)
            :ret string?)
 
 (defn no-spec [])

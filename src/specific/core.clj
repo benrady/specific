@@ -1,13 +1,7 @@
 (ns specific.core
-  (:require [clojure.test :as ctest]
-            [specific.test-double :as test-double]))
+  (:require [specific.test-double :as test-double]))
 
-(defn calls [spyf]
-  "Get the recorded calls from a test double"
-  ; Check if spyf isn't a double
-  (if-let [calls (:specific-calls (meta spyf))]
-    (get (deref calls) ctest/*testing-contexts* [])
-    {:msg (str spyf " is not a test double")}))
+(def calls specific.matchers/calls)
 
 (defmacro with-spies [vs & body]
   "Temporarily redefines vars with functions that spy on arguments when invoked."
