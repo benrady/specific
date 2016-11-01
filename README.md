@@ -13,7 +13,7 @@ _Specific_ depends on Clojure 1.9 (or 1.8 with the clojure.spec backport) and cl
 ```clojure
 (defproject sample
   :dependencies [[org.clojure/clojure "1.9.0"]]
-  :profiles {:dev {:plugins [[com.benrady/specific "0.0.1-SNAPSHOT"]]}})
+  :profiles {:dev {:plugins [[com.benrady/specific "0.0.4-SNAPSHOT"]]}})
 ```
 
 ## Usage
@@ -49,14 +49,14 @@ Mocking a function prevents the original function from being called, which is us
         (is (= [["hello"]] (calls sample/some-fun))))))
 ```
 
-Invoking a mock with arguments that don't meet the spec will result in a failure being reported to the test runner
+Invoking a mock with arguments that don't meet the spec will result in a failure being reported to the test runner. Since `some-fun` requires that we only pass strings as arguments, invoking it will an integer will cause the test to fail.
 
 ```clojure
-  (testing "reports an error if the arguments do not meet the specs "
+  (testing "reports an error if the arguments do not meet the specs"
     (some-fun 3))
 
 ;; FAIL in (specific.core) (test_double.clj:8)
-;; mock functions tracks the arguments of each call
+;; mock functions reports an error if the arguments do not meet the specs
 ;; expected: "Calls to specific.sample/some-fun to conform to (ifn?)"
 ;;   actual: "Calls to specific.sample/some-fun were (3)"
 ```
