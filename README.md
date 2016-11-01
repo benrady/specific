@@ -24,7 +24,7 @@ _Specific_ works best with functions that have clojure.spec definitions. You can
 (ns sample)
 
 (defn some-fun [greeting & names]
-  (spit "fun.txt" (apply str greeting ", " names)))
+  (spit "fun.txt" (str greeting " " (clojure.string/join ", " names))))
 
 (clojure.spec/fdef some-fun
            :args (clojure.spec/+ string?)
@@ -59,18 +59,26 @@ Invoking a mock with arguments that don't meet the spec will result in a failure
 ;; mock functions tracks the arguments of each call
 ;; expected: "Calls to specific.sample/some-fun to conform to (ifn?)"
 ;;   actual: "Calls to specific.sample/some-fun were (3)"
+```
 
 ### Stub Functions
 
-Stub functions are more leinent than mocks, not requiring the function to have a spec. This is useful when mocking out interactions with functions you did not write.
+Stub functions are more leinent than mocks, not requiring the function to have a spec. This is useful when mocking out interactions with functions you did not write. Stub functions return nil when created with the `with-stubs` macro, but they can also be created manually with `specific.test-double/stub-fn`
 
 ```clojure
   (testing "stub functions"
-    (with-stubs [spit]
 
-      (testing "doesn't need a spec to track calls"
-        (sample/some-fun "hello" "world")
-        (is (= [["fun.txt", "hello, world"]] (calls spit))))))
+    (testing "can be created manually to return a value"
+      (with-redefs [slurp (specific.test-double/stub-fn "Hello Stubs")]
+        (is (= "Hello Stubs" (slurp "nofile.txt")))
+        (is (= [["nofile.txt"]] (calls slurp)))))
+
+    (testing "with-stubs"
+      (with-stubs [spit]
+
+        (testing "doesn't need a spec to track calls"
+          (sample/some-fun "hello" "world")
+          (is (= [["fun.txt" "hello, world"]] (calls spit)))))))
 ```
 
 ### Spy Functions
@@ -78,6 +86,13 @@ Stub functions are more leinent than mocks, not requiring the function to have a
 Spy functions call through to the original function, but still record the calls and enforce the constraints in the function's spec. You can make assertions about how the spy was invoked after it is called.
 
 ```clojure
+  (testing "spy functions"
+    (with-spies [sample/some-fun]
+
+      (testing "calls through to the original function"
+        (sample/some-fun "Hello" "World")
+        (is (= [["Hello" "World"]] (calls sample/some-fun)))
+        (is (= "Hello World" (slurp "fun.txt"))))))
 ```
 
 ### Matchers

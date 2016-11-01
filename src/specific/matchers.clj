@@ -3,7 +3,6 @@
 
 (defn calls [spyf]
   "Get the recorded calls from a test double"
-  ; Check if spyf isn't a double
   (if-let [calls (:specific-calls (meta spyf))]
     (get (deref calls) ctest/*testing-contexts* [])
     {:msg (str spyf " is not a test double")}))

@@ -3,6 +3,7 @@
             [clojure.spec.test :as stest]
             [clojure.spec.gen :as gen]
             [clojure.spec :as spec]
+            [specific.test-double]
             [specific.sample :as sample])
   (:use [clojure.test]
         [specific.core]))
@@ -23,19 +24,23 @@
 
 
   (testing "stub functions"
-    (with-stubs [spit]
 
-      (testing "doesn't need a spec to track calls"
-        (sample/some-fun "hello" "world")
-        (is (= [["fun.txt", "hello, world"]] (calls spit))))))
+    (testing "can be created manually to return a value"
+      (with-redefs [slurp (specific.test-double/stub-fn "Hello Stubs")]
+        (is (= "Hello Stubs" (slurp "nofile.txt")))
+        (is (= [["nofile.txt"]] (calls slurp)))))
 
-  (testing "with-spies"
+    (testing "with-stubs"
+      (with-stubs [spit]
+
+        (testing "doesn't need a spec to track calls"
+          (sample/some-fun "hello" "world")
+          (is (= [["fun.txt" "hello world"]] (calls spit)))))))
+
+  (testing "spy functions"
     (with-spies [sample/some-fun]
-
-      (testing "tracks the arguments of each call"
-        (sample/some-fun "hello")
-        (is (= [["hello"]] (calls sample/some-fun))))
 
       (testing "calls through to the original function"
         (sample/some-fun "Hello" "World")
-        (is (= "Hello, World" (slurp "fun.txt")))))))
+        (is (= [["Hello" "World"]] (calls sample/some-fun)))
+        (is (= "Hello World" (slurp "fun.txt")))))))

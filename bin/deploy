@@ -4,12 +4,7 @@ set -euo pipefail
 
 bindir=`dirname $0`
 
-if [[ ! -x `which gpg-agent` ]]; then
-  echo "Can't find gpg-agent"
-  exit 1
-fi
 
-eval $(gpg-agent --daemon)
-gpg --quiet --batch --decrypt ~/.lein/credentials.clj.gpg > /dev/null
-$bindir/lein deploy clojars
-pkill gpg-agent
+if $bindir/lein test; then
+  $bindir/lein deploy clojars
+fi
