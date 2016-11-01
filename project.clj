@@ -23,6 +23,6 @@
   :test-refresh {:growl false
                  :notify-on-success false
                  :quiet true
-                 :changes-only true
+                 :changes-only false
                  :watch-dirs ["src" "test"]
                  :refresh-dirs ["src" "test"]})
