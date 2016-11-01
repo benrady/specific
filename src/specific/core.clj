@@ -1,7 +1,8 @@
 (ns specific.core
-  (:require [specific.test-double :as test-double]))
+  (:require [specific.matchers :as matchers]
+            [specific.test-double :as test-double]))
 
-(def calls specific.matchers/calls)
+(def calls matchers/calls)
 
 (defmacro with-spies [vs & body]
   "Temporarily redefines vars with functions that spy on arguments when invoked."
