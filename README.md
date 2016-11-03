@@ -101,7 +101,7 @@ You can use `calls` to get list of arguments for all the invocations of a mock, 
 
 ### Generative Testing
 
-Because interactions can be defined programatically using clojure.spec predicates, _Specify_ works especially well with generative tests. Future versions will provide helpers that allow you to easily mix example-based and generative
+Because interactions can be defined programatically using clojure.spec predicates, _Specify_ works especially well with generative tests. Future versions will provide helpers that allow you to easily mix example-based and generative tests.
 
 ## License
 
