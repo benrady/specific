@@ -22,12 +22,8 @@
     {:msg (str spyf " is not a test double")}))
 
 (defn compare-conforming [test-double expected-args]
-  ; FIXME need to handle multiple calls
   (for [actual (calls test-double)]
-    [actual (match-args expected-args actual)]))
+    (= actual (match-args expected-args actual))))
 
 (defn conforming [test-double & expected-args]
-  (every? 
-    identity 
-    (for [[actual matched] (compare-conforming test-double expected-args)]
-      (= matched actual))))
+  (every? identity (compare-conforming test-double expected-args)))

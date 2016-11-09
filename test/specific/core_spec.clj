@@ -8,33 +8,50 @@
   (:use [clojure.test]
         [specific.core]))
 
-(use-fixtures :each (fn [f] (f) 
-                      (let [file (clojure.java.io/as-file "fun.txt")]
-                        (when (.exists file)
-                          (clojure.java.io/delete-file "fun.txt")))))
-
 (deftest specific.core
+
+  (testing "with-gens"
+    (with-mocks [sample/some-fun]
+
+      (testing "can temporarily replace the generator for a spec"
+        (with-gens [::sample/fun-greeting #{"hello!"}]
+          (is (= "hello!" (sample/some-fun "hello")))))
+
+      (testing "can also use an existing spec's generator"
+        (with-gens [::sample/fun-greeting ::sample/number]
+          (is (number? (sample/some-fun "hello")))))))
 
   (testing "conforming"
     (with-stubs [sample/flip-two]
+      (spec/def ::number number?)
 
-      (testing "called with exact value"
+      (testing "when called with exact value"
         (sample/flip-two 1 2) 
         (is (conforming sample/flip-two 1 2)))
 
-      (testing "called with a spec to validate the argument"
+      (testing "when called with a spec to validate the argument"
         (sample/flip-two 1 42) 
-        (is (conforming sample/flip-two 1 ::sample/number)))))
+        (is (conforming sample/flip-two 1 ::number)))))
 
   (testing "mock functions"
     (with-mocks [sample/some-fun]
 
       (testing "returns a value generated from the spec"
-        (is (string? (sample/some-fun ""))))
+        (spec/valid? ::sample/fun-greeting (sample/some-fun "hello")))
 
-      (testing "tracks the arguments of each call"
+      (testing "validates against the spec of the original function"
         (sample/some-fun "hello")
-        (is (= [["hello"]] (calls sample/some-fun))))))
+        (is (= ["hello"] (first (calls sample/some-fun))))
+        ; (sample/some-fun 1)
+        ;
+        ;   expected: "Calls to specific.sample/some-fun to conform to (ifn?)"
+        ;   actual: "Calls to specific.sample/some-fun were (1)"
+        )
+
+      (testing "can validate individual calls"
+        (sample/some-fun "hello")
+        (sample/some-fun "world")
+        (is (= [["hello"] ["world"]] (calls sample/some-fun))))))
 
 
   (testing "stub functions"
@@ -52,9 +69,8 @@
           (is (= [["fun.txt" "hello world"]] (calls spit)))))))
 
   (testing "spy functions"
-    (with-spies [sample/some-fun]
+    (with-spies [sample/flip-two]
 
       (testing "calls through to the original function"
-        (sample/some-fun "Hello" "World")
-        (is (= [["Hello" "World"]] (calls sample/some-fun)))
-        (is (= "Hello World" (slurp "fun.txt")))))))
+        (is (= ["World" "Hello"] (sample/flip-two "Hello" "World")))
+        (is (= [["Hello" "World"]] (calls sample/flip-two)))))))

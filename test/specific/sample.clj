@@ -1,7 +1,6 @@
 (ns specific.sample
   (:require [clojure.spec]
-            [clojure.string :as string]
-            [clojure.java.shell :as shell]))
+            [clojure.string :as string]))
 
 (defn no-spec [])
 
@@ -15,9 +14,10 @@
     (spit "fun.txt" msg)
     msg))
 
-(clojure.spec/fdef some-fun
-                   :args (clojure.spec/+ string?)
-                   :ret string?)
+(clojure.spec/def ::fun-greeting string?)
 
-(defn more-fun [greeting opts]
-  (apply shell/sh "cowsay" greeting (vector opts)))
+(clojure.spec/def ::words (clojure.spec/+ string?))
+
+(clojure.spec/fdef some-fun
+                   :args ::words
+                   :ret ::fun-greeting)
