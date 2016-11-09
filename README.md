@@ -99,10 +99,11 @@ Spy functions call through to the original function, but still record the calls 
 
 ### Matchers
 
+You can use `calls` to get list of arguments for all the invocations of a mock, stub, or spy. Future versions of _Specify_ will provide higher level matchers for making assertions about invocations using clojure spec predciates.
+
 ### Generative Testing
 
-_Specify_ works especially well with generative tests.
-
+Because interactions can be defined programatically using clojure.spec predicates, _Specify_ works especially well with generative tests. Future versions will provide helpers that allow you to easily mix example-based and generative tests.
 
 ## License
 
