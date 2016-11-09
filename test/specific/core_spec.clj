@@ -15,6 +15,17 @@
 
 (deftest specific.core
 
+  (testing "conforming"
+    (with-stubs [sample/flip-two]
+
+      (testing "called with exact value"
+        (sample/flip-two 1 2) 
+        (is (conforming sample/flip-two 1 2)))
+
+      (testing "called with a spec to validate the argument"
+        (sample/flip-two 1 42) 
+        (is (conforming sample/flip-two 1 ::sample/number)))))
+
   (testing "mock functions"
     (with-mocks [sample/some-fun]
 

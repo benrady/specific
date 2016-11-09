@@ -1,19 +1,14 @@
 (ns specific.test-double-spec
-  (:require [specific.matchers :as matchers]
-            [specific.sample :as sample])
-
+  (:require [specific
+             [matchers :as matchers]
+             [sample :as sample]])
   (:use [clojure.test]
+        [specific.report-stub]
         [specific.test-double]))
 
-(def reports (atom []))
-
-(defn- assert-failure [& args]
-  (is (= args (last @reports))))
-
-(use-fixtures :each (fn [f] (reset! reports []) (f)))
-
-(testing "test doubles"
-  (with-redefs [report-failure (fn [& args] (swap! reports conj args))]
+(use-fixtures :each report-fixture)
+(deftest test-doubles
+  (with-redefs [report-failure failure-fn]
 
     (testing "mock functions"
       (let [mock (mock-fn #'specific.sample/some-fun)]

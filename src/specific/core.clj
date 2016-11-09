@@ -3,6 +3,7 @@
             [specific.test-double :as test-double]))
 
 (def calls matchers/calls)
+(def conforming matchers/conforming)
 
 (defmacro with-spies [vs & body]
   "Temporarily redefines vars with functions that spy on arguments when invoked."

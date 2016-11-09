@@ -10,8 +10,8 @@
                              [org.clojure/test.check "0.9.0"]
                              [org.mockito/mockito-core "1.9.5"]
                              [cljito "0.2.1"]]
-              :injections [(require 'pjstadig.humane-test-output)
-                           (pjstadig.humane-test-output/activate!)]}}
+              :injections [(require 'pjstadig.humane-test-output) (pjstadig.humane-test-output/activate!)]
+             }}
   :test-paths ["test"]
   :dependencies []
   :license {:name "GNU Public License v2"
