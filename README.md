@@ -65,7 +65,7 @@ Invoking a mock with arguments that don't meet the spec will result in a failure
 
 ### Stub Functions
 
-Stub functions are more leinent than mocks, not requiring the function to have a spec. This is useful when mocking out interactions with functions you did not write. Stub functions are generated to always return nil when created with the `with-stubs` macro, but they can also be created manually with `specific.test-double/stub-fn` to return a specific value.
+Stub functions are more lenient than mocks, not requiring the function to have a spec. This is useful when mocking out interactions with functions you did not write. Stub functions are generated to always return nil when created with the `with-stubs` macro, but they can also be created manually with `specific.test-double/stub-fn` to return a specific value.
 
 ```clojure
   (testing "stub functions"
@@ -85,7 +85,7 @@ Stub functions are more leinent than mocks, not requiring the function to have a
 
 ### Spy Functions
 
-Spy functions call through to the original function, but still record the calls and enforce the constraints in the function's spec. You can make assertions about how the spy was invoked after it is called.
+Spy functions call through to the original function, but still record the calls and enforce the constraints in the function's spec.
 
 ```clojure
   (testing "spy functions"
@@ -97,13 +97,49 @@ Spy functions call through to the original function, but still record the calls 
         (is (= "Hello World" (slurp "fun.txt"))))))
 ```
 
-### Matchers
+### Conforming Matcher
 
-You can use `calls` to get list of arguments for all the invocations of a mock, stub, or spy. Future versions of _Specify_ will provide higher level matchers for making assertions about invocations using clojure spec predciates.
+In the previous examples, you saw how to use use `calls` to get list of arguments for all the invocations of a mock, stub, or spy. While easy to use and extensible, this approach will not work reliably with random values generated from specs. For this, you can use the `conforming` matcher like so:
 
-### Generative Testing
+```clojure
+  (testing "conforming"
+    (with-stubs [sample/flip-two]
+      (spec/def ::number number?)
 
-Because interactions can be defined programatically using clojure.spec predicates, _Specify_ works especially well with generative tests. Future versions will provide helpers that allow you to easily mix example-based and generative tests.
+      (testing "when called with exact value"
+        (sample/flip-two 1 2) 
+        (is (conforming sample/flip-two 1 2)))
+
+      (testing "when called with a spec to validate the argument"
+        (sample/flip-two 1 42) 
+        (is (conforming sample/flip-two 1 ::number)))))
+```
+
+`conforming` works with mocks, stubs, and spies. You can use any spec that you want to verify the arguments: Either ones declared in the test or specs in another namespace, like the ones that are used in the code under test.
+
+### Temporary Generators
+
+Sometimes, within the scope of a test (or a group of tests) it makes sense to change the generator for a spec. Maybe you want to test a specific range of values, or just have a function return one value. To do that with _Specific_ you can use the `with-gens` macro:
+
+```clojure
+  (testing "with-gens"
+    (with-mocks [sample/some-fun]
+
+      (testing "can temporarily replace the generator for a spec"
+        (with-gens [::sample/fun-greeting #{"hello!"}]
+          (is (= "hello!" (sample/some-fun "hello")))))
+
+      (testing "can also use an existing spec's generator"
+        (with-gens [::sample/fun-greeting ::sample/number]
+          (is (number? (sample/some-fun "hello")))))))
+```
+
+
+## Generative Testing
+
+Because interactions can be defined programatically using clojure.spec predicates, _Specify_ works if you have example-based tests, generative tests, or a mixture of the two. 
+
+(TODO EXAMPLE HERE)
 
 ## License
 
