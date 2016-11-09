@@ -24,7 +24,9 @@ _Specific_ works best with functions that have clojure.spec definitions. You can
 (ns sample)
 
 (defn some-fun [greeting & names]
-  (spit "fun.txt" (str greeting " " (clojure.string/join ", " names))))
+  (let [msg (str greeting " " (clojure.string/join ", " names))]
+    (spit "fun.txt" msg)
+    msg))
 
 (clojure.spec/fdef some-fun
            :args (clojure.spec/+ string?)
@@ -52,7 +54,7 @@ Mocking a function prevents the original function from being called, which is us
 Invoking a mock with arguments that don't meet the spec will result in a failure being reported to the test runner. Since `some-fun` requires that we only pass strings as arguments, invoking it will an integer will cause the test to fail.
 
 ```clojure
-  (testing "reports an error if the arguments do not meet the specs"
+  (testing "report a failure if the arguments do not meet the specs"
     (some-fun 3))
 
 ;; FAIL in (specific.core) (test_double.clj:8)
@@ -63,7 +65,7 @@ Invoking a mock with arguments that don't meet the spec will result in a failure
 
 ### Stub Functions
 
-Stub functions are more leinent than mocks, not requiring the function to have a spec. This is useful when mocking out interactions with functions you did not write. Stub functions return nil when created with the `with-stubs` macro, but they can also be created manually with `specific.test-double/stub-fn`
+Stub functions are more leinent than mocks, not requiring the function to have a spec. This is useful when mocking out interactions with functions you did not write. Stub functions are generated to always return nil when created with the `with-stubs` macro, but they can also be created manually with `specific.test-double/stub-fn` to return a specific value.
 
 ```clojure
   (testing "stub functions"

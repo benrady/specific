@@ -8,7 +8,10 @@
   (:use [clojure.test]
         [specific.core]))
 
-(use-fixtures :each (fn [f] (f) (clojure.java.io/delete-file "fun.txt")))
+(use-fixtures :each (fn [f] (f) 
+                      (let [file (clojure.java.io/as-file "fun.txt")]
+                        (when (.exists file)
+                          (clojure.java.io/delete-file "fun.txt")))))
 
 (deftest specific.core
 
