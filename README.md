@@ -120,9 +120,9 @@ In the previous examples, you saw how to use use `calls` to get list of argument
 
 `conforming` works with mocks, stubs, and spies. You can use any spec that you want to verify the arguments: Either ones declared in the test or specs in another namespace, like the ones that are used in the code under test.
 
-### Temporary Generators
+### Generator Overrides
 
-Sometimes, within the scope of a test (or a group of tests) it makes sense to change the generator for a spec. Maybe you want to test a specific range of values, or just have a function return one value. To do that with _Specific_ you can use the `with-gens` macro:
+Sometimes, within the scope of a test (or a group of tests) it makes sense to override the generator for a spec. Maybe you want to test a specific range of values, or just have a function return one value. To do that with _Specific_ you can use the `with-gens` macro:
 
 ```clojure
   (testing "with-gens"
