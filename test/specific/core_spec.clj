@@ -26,7 +26,9 @@
         (sample/some-fun "world")
         (is (= [["hello"] ["world"]] (calls sample/some-fun))))))
 
+
   (testing "conforming matcher"
+    (spec/def ::nice-greeting (spec/+ string?))
     (with-mocks [sample/cowsay sample/greet]
 
       (testing "when called with exact value"
@@ -34,7 +36,6 @@
         (is (conforming sample/greet "hello" ["world"])))
 
       (testing "when called with a spec to validate the argument"
-        (spec/def ::nice-greeting (spec/+ string?))
         (sample/greet "hello" ["world"]) 
         (is (conforming sample/greet "hello" ::nice-greeting)))))
 

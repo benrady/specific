@@ -18,7 +18,7 @@
 (clojure.spec/fdef greet :ret ::fun-greeting)
 (clojure.spec/fdef cowsay
                    :args (clojure.spec/tuple ::fun-greeting)
-                   :ret (clojure.spec/keys :req-un [::out ::err ::exit]))
+                   :ret (clojure.spec/keys :req-un [::out ::exit]))
 (clojure.spec/fdef some-fun
                    :args (clojure.spec/+ string?)
                    :ret string?)

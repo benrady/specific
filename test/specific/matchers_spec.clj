@@ -1,11 +1,14 @@
 (ns specific.matchers-spec
-  (:require [specific
+  (:require [clojure.spec :as spec]
+            [specific
              [report-stub :as report-stub]
              [test-double :as test-double]
              [sample :as sample]])
   (:use [clojure.test]
         [specific.report-stub]
         [specific.matchers]))
+
+(spec/def ::number number?)
 
 (deftest matchers
 
@@ -20,7 +23,7 @@
       (testing "conforming if all calls conforming"
         (stub 2 1)
         (stub 3 1)
-        (is (conforming stub ::sample/number 1)))
+        (is (conforming stub ::number 1)))
 
       (testing "not conforming if no calls"
         (is (not (conforming stub))))
