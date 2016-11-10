@@ -3,33 +3,26 @@
             [clojure.java.shell :as shell]
             [clojure.string :as string]))
 
-(defn no-spec [])
+(defn greet [pre sufs]
+  (str pre ", " (string/join ", " sufs)))
 
-(defn flip-two [a b]
-  [b a])
-
-(clojure.spec/def ::number number?)
+(defn cowsay [msg]
+  (shell/sh "cowsay" msg))
 
 (defn some-fun [greeting & names]
-  (let [msg (str greeting " " (string/join ", " names))]
-    (spit "fun.txt" msg)
-    msg))
-
-(defn cowsay [greeting & names]
-  (shell/sh ("cowsay" (apply some-fun greeting names))))
-
-(clojure.spec/def ::fun-greeting string?)
-
-(clojure.spec/def ::words (clojure.spec/+ string?))
-
-(clojure.spec/fdef some-fun
-                   :args ::words
-                   :ret ::fun-greeting)
+  (:out (cowsay (greet greeting names))))
 
 (clojure.spec/def ::exit (clojure.spec/and integer? #(>= % 0) #(< % 256)))
 (clojure.spec/def ::out string?)
-(clojure.spec/def ::err string?)
-(clojure.spec/def ::cow-result (clojure.spec/keys :req-un [::out ::err ::exit]))
+(clojure.spec/def ::fun-greeting string?)
+(clojure.spec/fdef greet :ret ::fun-greeting)
 (clojure.spec/fdef cowsay
-                   :args ::words
-                   :ret ::cow-result)
+                   :args (clojure.spec/tuple ::fun-greeting)
+                   :ret (clojure.spec/keys :req-un [::out ::err ::exit]))
+(clojure.spec/fdef some-fun
+                   :args (clojure.spec/+ string?)
+                   :ret string?)
+;; Deprecated
+
+(defn flip-two [a b]
+  [b a])

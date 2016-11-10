@@ -26,4 +26,6 @@
     (= actual (match-args expected-args actual))))
 
 (defn conforming [test-double & expected-args]
-  (every? identity (compare-conforming test-double expected-args)))
+  (and 
+    (seq (calls test-double))
+    (every? identity (compare-conforming test-double expected-args))))

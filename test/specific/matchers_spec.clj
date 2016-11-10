@@ -22,6 +22,9 @@
         (stub 3 1)
         (is (conforming stub ::sample/number 1)))
 
+      (testing "not conforming if no calls"
+        (is (not (conforming stub))))
+
       (testing "not conforming if argument count differs"
         (stub 2)
         (is (not (conforming stub 2 1))))))
