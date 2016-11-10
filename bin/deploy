@@ -4,7 +4,6 @@ set -euo pipefail
 
 bindir=`dirname $0`
 
-
 if $bindir/lein test; then
   $bindir/lein deploy clojars
 fi

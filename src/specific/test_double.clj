@@ -4,7 +4,7 @@
             [clojure.spec.gen :as gen]
             [clojure.spec :as spec]))
 
-(def ^:dynamic *temporary-gens* {})
+(def ^:dynamic *gen-overrides* {})
 
 (defn report-failure [msg expected actual]
   (ctest/do-report {:msg msg :type :fail :expected expected :actual actual}))
@@ -25,8 +25,7 @@
     (when-not (spec/valid? args-spec args)
       (doseq [problem (:clojure.spec/problems (spec/explain-data fn-spec args))]
         (report-failure (spec/explain-str fn-spec args) (expected-msg problem) (actual-msg problem))))
-    (let [ret-spec (:ret fn-spec)]
-      (last (gen/sample (get *temporary-gens* ret-spec (spec/gen ret-spec)))))))
+    (first (gen/sample (spec/gen (:ret fn-spec) *gen-overrides*) 1))))
 
 (defn- report-no-spec [fn-sym fn-spec]
   (report-failure "No clojure.spec defined" (str "clojure.spec for " fn-sym) fn-spec))

@@ -3,3 +3,4 @@ pom.xml
 .nrepl-port
 .lein-repl-history
 .lein-failures
+pom.xml.asc

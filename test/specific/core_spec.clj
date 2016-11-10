@@ -10,16 +10,28 @@
 
 (deftest specific.core
 
+  (testing "gens"
+    (let [g (spec/gen ::sample/cow-result 
+                      {::sample/exit #(spec/gen #{1})
+                       ::sample/out #(spec/gen #{"out"})
+                       ::sample/err #(spec/gen #{"err"})})]
+      (is (= [1] (map :exit (gen/sample g 1))))))
+
   (testing "with-gens"
-    (with-mocks [sample/some-fun]
+    (with-mocks [sample/cowsay 
+                 sample/some-fun]
 
       (testing "can temporarily replace the generator for a spec"
         (with-gens [::sample/fun-greeting #{"hello!"}]
           (is (= "hello!" (sample/some-fun "hello")))))
 
+      (testing "can replace the generator for a nested value"
+        (with-gens [::sample/exit #{0}]
+          (is (= 0 (:exit (sample/cowsay "hello"))))))
+
       (testing "can also use an existing spec's generator"
-        (with-gens [::sample/fun-greeting ::sample/number]
-          (is (number? (sample/some-fun "hello")))))))
+        (with-gens [::sample/fun-greeting ::sample/out]
+          (is (string? (sample/some-fun "hello")))))))
 
   (testing "conforming"
     (with-stubs [sample/flip-two]

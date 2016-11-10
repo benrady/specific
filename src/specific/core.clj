@@ -7,9 +7,9 @@
 (def conforming matchers/conforming)
 
 (defmacro with-gens [bindings & body]
-  `(let [new-gens# (zipmap (map #(spec/spec %) (take-nth 2 ~bindings)) 
-                           (map #(spec/gen %) (take-nth 2 (next ~bindings))))]
-     (binding [specific.test-double/*temporary-gens* (merge specific.test-double/*temporary-gens* new-gens#)]
+  `(let [new-gens# (zipmap (take-nth 2 ~bindings) 
+                           (map (fn [b#] #(spec/gen b#)) (take-nth 2 (next ~bindings))))]
+     (binding [specific.test-double/*gen-overrides* (merge specific.test-double/*gen-overrides* new-gens#)]
        (do ~@body))))
 
 (defmacro with-spies [vs & body]
