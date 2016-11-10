@@ -10,12 +10,12 @@ _Specific_ can generate mock functions from [clojure.spec](http://clojure.org/ab
 
 ## Dependencies
 
-_Specific_ depends on Clojure 1.9 (or 1.8 with the clojure.spec backport) and clojure.test. To add the following to your project.clj file to add it to your project.
+_Specific_ depends on Clojure 1.9 (or 1.8 with the [clojure.spec backport](https://github.com/tonsky/clojure-future-spec)). To add the following to your project.clj file to add it to your project.
 
 ```clojure
 (defproject sample
-  :dependencies [[org.clojure/clojure "1.9.0"]]
-  :profiles {:dev {:plugins [[com.benrady/specific "0.0.4-SNAPSHOT"]]}})
+  :dependencies [[org.clojure/clojure "1.8.0"]]
+  :profiles {:dev {:plugins [[com.benrady/specific "0.1.0"]]}})
 ```
 
 ## Usage
