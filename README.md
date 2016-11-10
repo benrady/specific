@@ -4,9 +4,9 @@ Generate test doubles using clojure.spec
 
 ## Why?
 
-Fast-running unit tests (sometimes called [microtests](https://www.industriallogic.com/blog/history-microtests/)) have proved to be far more powerful than comprehensive integration and acceptance tests, but this approach requires a different mindset. Testing code with side effects is especially painful. Mocking out the interactions with that code is a great way to keep your tests fast and reliable.
+Fast-running unit tests (sometimes called [microtests](https://www.industriallogic.com/blog/history-microtests/)) have proved to be far more powerful than comprehensive integration and acceptance tests, but this approach requires a different mindset. Testing code with side effects is especially painful. 
 
-_Specific_ can generate mock functions from [clojure.spec](http://clojure.org/about/spec) definitions, so it works if you have example-based tests, [property-based](https://github.com/clojure/test.check) tests, or a mixture of the two.
+Mocking out interactions is a great way to keep your tests fast and reliable. _Specific_ can generate mock functions from [clojure.spec](http://clojure.org/about/spec) definitions, so it works if you have example-based tests, [property-based](https://github.com/clojure/test.check) tests, or a mixture of the two.
 
 ## Dependencies
 
