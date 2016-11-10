@@ -118,7 +118,7 @@ In the previous examples, you saw how to use use `calls` to get list of argument
         (is (conforming sample/flip-two 1 ::number)))))
 ```
 
-`conforming` works with mocks, stubs, and spies. You can use any spec that you want to verify the arguments: Either ones declared in the test or specs in another namespace, like the ones that are used in the code under test.
+The conforming matcher works with mocks, stubs, and spies. You can use any spec that you want to verify the arguments: Either ones declared in the test or specs in another namespace, like the ones that are used in the code under test.
 
 ### Generator Overrides
 
