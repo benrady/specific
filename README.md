@@ -10,7 +10,7 @@ _Specific_ can generate mock functions from [clojure.spec](http://clojure.org/ab
 
 ## Dependencies
 
-_Specific_ depends on Clojure 1.9 (or 1.8 with the [clojure.spec backport](https://github.com/tonsky/clojure-future-spec)). To add the following to your project.clj file to add it to your project.
+_Specific_ depends on Clojure 1.9 (or 1.8 with the [clojure.spec backport](https://github.com/tonsky/clojure-future-spec)). Add the following to your project.clj.
 
 ```clojure
 (defproject sample
