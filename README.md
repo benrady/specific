@@ -4,7 +4,9 @@ Generate test doubles using clojure.spec
 
 ## Why?
 
-Testing code that has side effects can be painful. Mocking out those interactions is a great way to keep your tests fast and reliable. Using clojure.spec, we can automatically generate those mocks.
+Testing code with side effects, such as I/O, can be painful. It slows down your tests and can cause spurious failures. Mocking out these interactions is a great way to keep your tests fast and reliable.
+
+_Specific_ can generate mock functions from [clojure.spec](http://clojure.org/about/spec) definitions. It can help you make assertions about how the functions were called, or simply remove the side effect and let your spec declarations do the verification. This means it works on programs with example-based tests, [property-based](https://github.com/clojure/test.check) generative tests, or a mixture of the two.
 
 ## Dependencies
 
@@ -96,6 +98,7 @@ Spy functions call through to the original function, but still record the calls 
         (is (= [["Hello" "World"]] (calls sample/some-fun)))
         (is (= "Hello World" (slurp "fun.txt"))))))
 ```
+In practice, spies in _Specific_ work a lot like [clojure.spec/instrument](https://clojure.github.io/clojure/branch-master/clojure.spec-api.html#clojure.spec.test/instrument), expect that they are scoped only to particular forms rather than being a global mutation of the function.
 
 ### Conforming Matcher
 
@@ -115,11 +118,11 @@ In the previous examples, you saw how to use use `calls` to get list of argument
         (is (conforming sample/flip-two 1 ::number)))))
 ```
 
-`conforming` works with mocks, stubs, and spies. You can use any spec that you want to verify the arguments: Either ones declared in the test or specs in another namespace, like the ones that are used in the code under test.
+The conforming matcher works with mocks, stubs, and spies. You can use any spec that you want to verify the arguments: Either ones declared in the test or specs in another namespace, like the ones that are used in the code under test.
 
-### Temporary Generators
+### Generator Overrides
 
-Sometimes, within the scope of a test (or a group of tests) it makes sense to change the generator for a spec. Maybe you want to test a specific range of values, or just have a function return one value. To do that with _Specific_ you can use the `with-gens` macro:
+Sometimes, within the scope of a test (or a group of tests) it makes sense to override the generator for a spec. Maybe you want to test a specific range of values, or just have a function return one value. To do that with _Specific_ you can use the `with-gens` macro:
 
 ```clojure
   (testing "with-gens"
@@ -133,13 +136,7 @@ Sometimes, within the scope of a test (or a group of tests) it makes sense to ch
         (with-gens [::sample/fun-greeting ::sample/number]
           (is (number? (sample/some-fun "hello")))))))
 ```
-
-
-## Generative Testing
-
-Because interactions can be defined programatically using clojure.spec predicates, _Specify_ works if you have example-based tests, generative tests, or a mixture of the two. 
-
-(TODO EXAMPLE HERE)
+Since with-gens redefines the generator for a spec, and not an entire function, you can use to specify a portion of an otherwise default generated return value (a single nested `:phone-number` value in an entity map, for example).
 
 ## License
 
