@@ -98,6 +98,7 @@ Spy functions call through to the original function, but still record the calls 
         (is (= [["Hello" "World"]] (calls sample/some-fun)))
         (is (= "Hello World" (slurp "fun.txt"))))))
 ```
+In practice, spies in _Specific_ work a lot like [clojure.spec/instrument](https://clojure.github.io/clojure/branch-master/clojure.spec-api.html#clojure.spec.test/instrument), expect that they are scoped only to particular forms rather than being a global mutation of the function.
 
 ### Conforming Matcher
 
