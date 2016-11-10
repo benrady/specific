@@ -4,7 +4,9 @@ Generate test doubles using clojure.spec
 
 ## Why?
 
-Testing code that has side effects can be painful. Mocking out those interactions is a great way to keep your tests fast and reliable. Using clojure.spec, we can automatically generate those mocks.
+Fast-running unit tests (sometimes called [microtests](https://www.industriallogic.com/blog/history-microtests/)) have proved to be far more powerful than comprehensive integration and acceptance tests. But testing code that has side effects can be painful. Mocking out the interactions with that code is a great way to keep your tests fast and reliable.
+
+_Specific_ can generate mock functions from [clojure.spec](http://clojure.org/about/spec) definitions, so it works if you have example-based tests, [property-based](https://github.com/clojure/test.check) tests, or a mixture of the two.
 
 ## Dependencies
 
@@ -133,13 +135,7 @@ Sometimes, within the scope of a test (or a group of tests) it makes sense to ch
         (with-gens [::sample/fun-greeting ::sample/number]
           (is (number? (sample/some-fun "hello")))))))
 ```
-
-
-## Generative Testing
-
-Because interactions can be defined programatically using clojure.spec predicates, _Specify_ works if you have example-based tests, generative tests, or a mixture of the two. 
-
-(TODO EXAMPLE HERE)
+Since with-gens redefines the generator for a spec, and not an entire function, you can use to specify a portion of an otherwise default generated return value (a single nested `:phone-number` value in an entity map, for example).
 
 ## License
 
