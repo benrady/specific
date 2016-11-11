@@ -38,7 +38,7 @@
             (is (= 'string? (:expected (last @reports)))))
 
           (testing "reports a failure message"
-            (is (= "val: 3 fails spec: specific.sample/some-fun at: [:args] predicate: string?\n"
+            (is (= "val: 3 fails spec: :specific.sample/fun-greeting at: [:args :greeting] predicate: string?\n"
                    (:message (last @reports))))))
 
         (testing "returns a value that matches the spec"

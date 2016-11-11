@@ -12,41 +12,48 @@
 (deftest specific.core
 
   (testing "mock functions"
-    (with-mocks [sample/some-fun]
+    (with-mocks [sample/cowsay]
 
       (testing "return a value generated from the spec"
-        (spec/valid? string? (sample/some-fun "hello")))
+        (spec/valid? string? (:out (sample/cowsay "hello"))))
 
-      (testing "validates against the spec of the original function"
-        (sample/some-fun "hello")
-        (is (= ["hello"] (first (calls sample/some-fun)))))
+      (testing "validate against the spec of the original function"
+        (sample/cowsay "hello"))
 
-      (testing "records the individual calls"
-        (sample/some-fun "hello")
-        (sample/some-fun "world")
-        (is (= [["hello"] ["world"]] (calls sample/some-fun))))))
+        ; (sample/cowsay 1)
+        ; val: 1 fails spec: :specific.sample/fun-greeting at: [:args 0] predicate: string?
+        ;
+        ; expected: string?
+        ;   actual: 1
+        
 
+      (testing "record the individual calls"
+        (sample/cowsay "hello")
+        (sample/cowsay "world")
+        (is (= [["hello"] ["world"]] (calls sample/cowsay))))))
 
   (testing "conforming matcher"
-    (spec/def ::nice-greeting (spec/+ string?))
+    (spec/def ::words (spec/nilable (spec/+ string?)))
     (with-mocks [sample/cowsay sample/greet]
 
-      (testing "when called with exact value"
-        (sample/greet "hello" ["world"]) 
+      (testing "matches with exact values"
+        (sample/some-fun "hello" "world") 
         (is (conforming sample/greet "hello" ["world"])))
 
-      (testing "when called with a spec to validate the argument"
-        (sample/greet "hello" ["world"]) 
-        (is (conforming sample/greet "hello" ::nice-greeting)))))
+      (testing "can use a spec to validate an argument"
+        (sample/some-fun "hello" "world")
+        (is (conforming sample/greet "hello" ::words)))
+
+      (testing "will ensure all invocations are conforming"
+        (doall (spec/exercise-fn `sample/some-fun)); Ironically, exercise is lazy
+        (is (conforming sample/greet ::sample/fun-greeting ::words)))))
 
   (testing "stub functions"
+    (with-stubs [clojure.java.shell/sh]
 
-    (testing "with-stubs"
-      (with-stubs [clojure.java.shell/sh]
-
-        (testing "doesn't need a spec to track calls"
-          (sample/some-fun "hello" "world")
-          (is (= [["cowsay" "hello, world"]] (calls clojure.java.shell/sh)))))))
+      (testing "doesn't need a spec to track calls"
+        (sample/some-fun "hello" "world")
+        (is (= [["cowsay" "hello, world"]] (calls clojure.java.shell/sh))))))
 
   (testing "spy functions"
     (with-spies [sample/greet]

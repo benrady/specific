@@ -19,69 +19,97 @@ _Specific_ depends on Clojure 1.9 (or 1.8 with the [clojure.spec backport](https
 
 ## Usage
 
-_Specific_ works best with functions that have clojure.spec definitions. You can include these definitions with your code under test, or you can just add them to your tests.
+To show you how to use _Specific_ let's assume you have three functions you'd like to test. One of them, `cowsay`, executes a shell command which might not be available in all environments.
 
 ```clojure
 (ns sample)
 
-(defn some-fun [greeting & names]
-  (let [msg (str greeting " " (clojure.string/join ", " names))]
-    (spit "fun.txt" msg)
-    msg))
+(defn greet [pre sufs]
+  (str pre ", " (string/join ", " sufs)))
 
-(clojure.spec/fdef some-fun
-           :args (clojure.spec/+ string?)
-           :ret string?)
+(defn cowsay [msg]
+  (shell/sh "cowsay" msg))
+
+(defn some-fun [greeting & names]
+  (:out (cowsay (greet greeting names))))
 ```
 
-Assuming we've defined the function above, and its associated spec, there are number of ways to test interactions with it.
+_Specific_ works best with functions that have clojure.spec [definitions](http://clojure.org/guides/spec#_spec_ing_functions). You can include these definitions with the code under test, or you can add them in the tests themselves, or both.
+
+```clojure
+(clojure.spec/def ::exit (clojure.spec/and integer? #(>= % 0) #(< % 256)))
+(clojure.spec/def ::out string?)
+(clojure.spec/def ::fun-greeting string?)
+(clojure.spec/fdef greet :ret ::fun-greeting)
+(clojure.spec/fdef cowsay
+                   :args (clojure.spec/tuple ::fun-greeting)
+                   :ret (clojure.spec/keys :req-un [::out ::exit]))
+(clojure.spec/fdef some-fun
+                   :args (clojure.spec/+ string?)
+                   :ret string?)
+```
 
 ### Mock Functions
 
 Mocking a function prevents the original function from being called, which is useful when you want to prevent side effects in a test, but still want to ensure it was invoked properly. Mocked functions validate their arguments against the specs defined for the original function. 
 
 ```clojure
-  (testing "mock functions"
-    (with-mocks [sample/some-fun]
+(testing "mock functions"
+  (with-mocks [sample/cowsay]
 
-      (testing "returns a value generated from the spec"
-        (is (string? (sample/some-fun ""))))
+    (testing "return a value generated from the spec"
+      (spec/valid? string? (:out (sample/cowsay "hello"))))
 
-      (testing "tracks the arguments of each call"
-        (sample/some-fun "hello")
-        (is (= [["hello"]] (calls sample/some-fun))))))
+    (testing "validate against the spec of the original function"
+      (sample/cowsay "hello")
+      (spec/exercise-fn `sample/cowsay))
+
+      ; (sample/cowsay 1)
+      ; val: 1 fails spec: :specific.sample/fun-greeting at: [:args 0] predicate: string?
+      ;
+      ; expected: string?
+      ;   actual: 1
+      
+
+    (testing "record the individual calls"
+      (sample/cowsay "hello")
+      (sample/cowsay "world")
+      (is (= [["hello"] ["world"]] (calls sample/cowsay))))))
 ```
 
-Invoking a mock with arguments that don't meet the spec will result in a failure being reported to the test runner. Since `some-fun` requires that we only pass strings as arguments, invoking it will an integer will cause the test to fail.
+### Conforming Matcher
+
+You can use `calls` to get list of arguments for all the invocations of any _Specific_ test double. While easy to understand and extensible, this approach will not work reliably with random values generated from specs. For this, you can use the `conforming` matcher like so:
 
 ```clojure
-  (testing "report a failure if the arguments do not meet the specs"
-    (some-fun 3))
+(testing "conforming matcher"
+  (spec/def ::nice-greeting (spec/+ string?))
+  (with-mocks [sample/cowsay sample/greet]
 
-;; FAIL in (specific.core) (test_double.clj:8)
-;; mock functions reports an error if the arguments do not meet the specs
-;; expected: "Calls to specific.sample/some-fun to conform to (ifn?)"
-;;   actual: "Calls to specific.sample/some-fun were (3)"
+    (testing "when called with exact value"
+      (sample/greet "hello" ["world"]) 
+      (is (conforming sample/greet "hello" ["world"])))
+
+    (testing "when called with a spec to validate the argument"
+      (sample/greet "hello" ["world"]) ; Replace with a generative example
+      (is (conforming sample/greet "hello" ::nice-greeting)))))
 ```
+
+The conforming matcher works with mocks, stubs, and spies. You can use any spec that you want to verify the arguments: Either ones declared in the test or specs in another namespace, like the ones that are used in the code under test.
+
+The conforming matcher is also handy when you need to verify invocations that include (or are derived from) generated data returned from a mock or stub.
 
 ### Stub Functions
 
-Stub functions are more lenient than mocks, not requiring the function to have a spec. This is useful when mocking out interactions with functions you did not write. Stub functions are generated to always return nil when created with the `with-stubs` macro, but they can also be created manually with `specific.test-double/stub-fn` to return a specific value.
+Stub functions are more lenient than mocks, not requiring the function to have a spec. This is useful when mocking out interactions with functions you did not write. Stub functions always return nil.
 
 ```clojure
   (testing "stub functions"
+    (with-stubs [spit]
 
-    (testing "can be created manually to return a value"
-      (with-redefs [slurp (specific.test-double/stub-fn "Hello Stubs")]
-        (is (= "Hello Stubs" (slurp "nofile.txt")))
-        (is (= [["nofile.txt"]] (calls slurp)))))
-
-    (testing "with-stubs"
-      (with-stubs [spit]
-
-        (testing "doesn't need a spec to track calls"
-          (sample/some-fun "hello" "world")
-          (is (= [["fun.txt" "hello, world"]] (calls spit)))))))
+      (testing "doesn't need a spec to track calls"
+        (sample/some-fun "hello" "world")
+        (is (= [["fun.txt" "hello, world"]] (calls spit))))))
 ```
 
 ### Spy Functions
@@ -98,26 +126,6 @@ Spy functions call through to the original function, but still record the calls 
         (is (= "Hello World" (slurp "fun.txt"))))))
 ```
 In practice, spies in _Specific_ work a lot like [clojure.spec/instrument](https://clojure.github.io/clojure/branch-master/clojure.spec-api.html#clojure.spec.test/instrument), expect that they are scoped only to particular forms rather than being a global mutation of the function.
-
-### Conforming Matcher
-
-In the previous examples, you saw how to use use `calls` to get list of arguments for all the invocations of a mock, stub, or spy. While easy to use and extensible, this approach will not work reliably with random values generated from specs. For this, you can use the `conforming` matcher like so:
-
-```clojure
-  (testing "conforming"
-    (with-stubs [sample/flip-two]
-      (spec/def ::number number?)
-
-      (testing "when called with exact value"
-        (sample/flip-two 1 2) 
-        (is (conforming sample/flip-two 1 2)))
-
-      (testing "when called with a spec to validate the argument"
-        (sample/flip-two 1 42) 
-        (is (conforming sample/flip-two 1 ::number)))))
-```
-
-The conforming matcher works with mocks, stubs, and spies. You can use any spec that you want to verify the arguments: Either ones declared in the test or specs in another namespace, like the ones that are used in the code under test.
 
 ### Generator Overrides
 

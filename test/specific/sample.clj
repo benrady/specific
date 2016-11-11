@@ -20,7 +20,8 @@
                    :args (clojure.spec/tuple ::fun-greeting)
                    :ret (clojure.spec/keys :req-un [::out ::exit]))
 (clojure.spec/fdef some-fun
-                   :args (clojure.spec/+ string?)
+                   :args (clojure.spec/cat :greeting ::fun-greeting
+                                           :names (clojure.spec/* string?))
                    :ret string?)
 ;; Deprecated
 
