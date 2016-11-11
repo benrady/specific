@@ -25,7 +25,7 @@ To show you how to use _Specific_, let's assume you have three interdependent fu
 (ns sample)
 
 (defn greet [pre sufs]
-  (str pre ", " (string/join ", " sufs)))
+  (string/join ", " (cons pre sufs)))
 
 (defn cowsay [msg]
   (shell/sh "cowsay" msg)) ; Fails in some environments
