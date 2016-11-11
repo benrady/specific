@@ -130,12 +130,12 @@ Just as with mocks, when using the conforming matcher on a stub, you can use spe
 Spy functions call through to the original function, but still record the calls and enforce the constraints in the function's spec.
 
 ```clojure
-  (testing "spy functions"
-    (with-spies [sample/greet]
+(testing "spy functions"
+  (with-spies [sample/greet]
 
-      (testing "calls through to the original function"
-        (is (= "Hello, World!" (sample/greet "Hello" ["World!"])))
-        (is (= [["Hello" ["World!"]]] (calls sample/greet))))))
+    (testing "calls through to the original function"
+      (is (= "Hello, World!" (sample/greet "Hello" ["World!"])))
+      (is (= [["Hello" ["World!"]]] (calls sample/greet))))))
 ```
 In practice, spies in _Specific_ work a lot like the default behavior of [clojure.spec/instrument](https://clojure.github.io/clojure/branch-master/clojure.spec-api.html#clojure.spec.test/instrument), except that they are scoped only to the forms in the `with-spies` macro.
 
