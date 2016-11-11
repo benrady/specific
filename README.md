@@ -1,6 +1,6 @@
 # Specific
 
-Generate test doubles using clojure.spec
+Generate mocks and other test doubles using clojure.spec
 
 ## Why?
 
