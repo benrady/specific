@@ -55,6 +55,8 @@ _Specific_ works best with functions that have clojure.spec [definitions](http:/
 
 Mocking a function prevents the original function from being called, which is useful when you want to prevent side effects in a test, but still want to ensure it was invoked properly. Mocked functions validate their arguments against the specs defined for the original function. 
 
+You can replace a list of functions with mock functions using the `specific.core/with-mocks` macro, like so:
+
 ```clojure
 (testing "mock functions"
   (with-mocks [sample/cowsay]
