@@ -158,7 +158,7 @@ Sometimes, within the scope of a test (or a group of tests) it makes sense to ov
 
 Since with-gens redefines the generator for a spec, and not an entire function, you can use it to specify a portion of an otherwise default generated return value (a single nested `:phone-number` value in an entity map, for example).
 
-### Friends and Relations
+## Friends and Relations
 
 _Specific_ gets along well with the following tools:
   * [lein-test-refresh](https://github.com/jakemcc/lein-test-refresh) by [Jake McCrary](http://jakemccrary.com/)
