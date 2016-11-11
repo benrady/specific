@@ -19,7 +19,7 @@ _Specific_ depends on Clojure 1.9 (or 1.8 with the [clojure.spec backport](https
 
 ## Usage
 
-To show you how to use _Specific_ let's assume you have three functions you'd like to test. One of them, `cowsay`, executes a shell command which might not be available in all environments.
+To show you how to use _Specific_ let's assume you have three interdependent functions you'd like to test. One of them, `cowsay`, executes a shell command which might not be available in all environments.
 
 ```clojure
 (ns sample)
@@ -28,7 +28,7 @@ To show you how to use _Specific_ let's assume you have three functions you'd li
   (str pre ", " (string/join ", " sufs)))
 
 (defn cowsay [msg]
-  (shell/sh "cowsay" msg))
+  (shell/sh "cowsay" msg)) ; Fails in some environments
 
 (defn some-fun [greeting & names]
   (:out (cowsay (greet greeting names))))
@@ -69,7 +69,6 @@ Mocking a function prevents the original function from being called, which is us
       ;
       ; expected: string?
       ;   actual: 1
-      
 
     (testing "record the individual calls"
       (sample/cowsay "hello")

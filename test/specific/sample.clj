@@ -7,7 +7,7 @@
   (string/join ", " (cons pre sufs)))
 
 (defn cowsay [msg]
-  (shell/sh "cowsay" msg))
+  (shell/sh "cowsay" msg)) ; Fails in some environments
 
 (defn some-fun [greeting & names]
   (:out (cowsay (greet greeting names))))

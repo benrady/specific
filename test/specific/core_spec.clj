@@ -26,7 +26,6 @@
         ;
         ; expected: string?
         ;   actual: 1
-        
 
       (testing "record the individual calls"
         (sample/cowsay "hello")
