@@ -58,7 +58,7 @@ Mocking a function prevents the original function from being called, which is us
   (with-mocks [sample/cowsay]
 
     (testing "return a value generated from the spec"
-      (is (>= 0 (:exit (sample/cowsay "hello"))))
+      (is (<= 0 (:exit (sample/cowsay "hello"))))
       (is string? (:out (sample/cowsay "hello"))))
 
     (testing "validate against the spec of the original function"
