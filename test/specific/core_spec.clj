@@ -4,6 +4,7 @@
             [clojure.spec.test :as stest]
             [clojure.spec.gen :as gen]
             [clojure.spec :as spec]
+            [clojure.string :as string]
             [specific.test-double]
             [specific.sample :as sample])
   (:use [clojure.test]
@@ -33,20 +34,21 @@
         (is (= [["hello"] ["world"]] (calls sample/cowsay))))))
 
   (testing "conforming matcher"
-    (spec/def ::words (spec/nilable (spec/+ string?)))
-    (with-mocks [sample/cowsay sample/greet]
+    (spec/def ::h-word #(string/starts-with? % "h"))
+    (with-mocks [sample/cowsay]
 
       (testing "matches with exact values"
         (sample/some-fun "hello" "world") 
-        (is (conforming sample/greet "hello" ["world"])))
+        (is (conforming sample/cowsay "hello, world")))
 
-      (testing "can use a spec to validate an argument"
+      (testing "can use a custom spec to validate an argument"
         (sample/some-fun "hello" "world")
-        (is (conforming sample/greet "hello" ::words)))
+        (sample/some-fun "hello" "larry")
+        (is (conforming sample/cowsay ::h-word)))
 
-      (testing "will ensure all invocations are conforming"
-        (doall (spec/exercise-fn `sample/some-fun)); Ironically, exercise is lazy
-        (is (conforming sample/greet ::sample/fun-greeting ::words)))))
+      (testing "can ensure all invocations are conforming"
+        (doall ; Ironically, exercise is lazy
+          (spec/exercise-fn `sample/some-fun)))))
 
   (testing "stub functions"
     (with-stubs [clojure.java.shell/sh]

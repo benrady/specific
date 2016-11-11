@@ -4,7 +4,7 @@
             [clojure.string :as string]))
 
 (defn greet [pre sufs]
-  (str pre ", " (string/join ", " sufs)))
+  (string/join ", " (cons pre sufs)))
 
 (defn cowsay [msg]
   (shell/sh "cowsay" msg))
