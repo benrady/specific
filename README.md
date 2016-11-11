@@ -22,7 +22,9 @@ _Specific_ depends on Clojure 1.9 (or 1.8 with the [clojure.spec backport](https
 To show you how to use _Specific_, let's assume you have three interdependent functions you'd like to test. One of them, `cowsay`, executes a shell command which might not be available in all environments.
 
 ```clojure
-(ns sample)
+(ns sample
+  (:require [clojure.java.shell :as shell]
+            [clojure.string :as string]))
 
 (defn greet [pre sufs]
   (string/join ", " (cons pre sufs)))
