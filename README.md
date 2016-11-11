@@ -19,7 +19,7 @@ _Specific_ depends on Clojure 1.9 (or 1.8 with the [clojure.spec backport](https
 
 ## Usage
 
-To show you how to use _Specific_ let's assume you have three interdependent functions you'd like to test. One of them, `cowsay`, executes a shell command which might not be available in all environments.
+To show you how to use _Specific_, let's assume you have three interdependent functions you'd like to test. One of them, `cowsay`, executes a shell command which might not be available in all environments.
 
 ```clojure
 (ns sample)
@@ -156,7 +156,14 @@ Sometimes, within the scope of a test (or a group of tests) it makes sense to ov
         (is (string? (sample/some-fun "hello"))))))))
 ```
 
-Since with-gens redefines the generator for a spec, and not an entire function, you can use to specify a portion of an otherwise default generated return value (a single nested `:phone-number` value in an entity map, for example).
+Since with-gens redefines the generator for a spec, and not an entire function, you can use it to specify a portion of an otherwise default generated return value (a single nested `:phone-number` value in an entity map, for example).
+
+### Friends and Relations
+
+_Specific_ gets along well with the following tools:
+  * [lein-test-refresh](https://github.com/jakemcc/lein-test-refresh) by [Jake McCrary](http://jakemccrary.com/)
+  * [humane-test-output](https://github.com/pjstadig/humane-test-output) by Paul Stadig
+  * [test.chuck](https://github.com/gfredericks/test.chuck) by [Gary Fredericks](http://gfredericks.com/)
 
 ## License
 
