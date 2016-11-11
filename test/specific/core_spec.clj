@@ -16,7 +16,8 @@
     (with-mocks [sample/cowsay]
 
       (testing "return a value generated from the spec"
-        (spec/valid? string? (:out (sample/cowsay "hello"))))
+        (is (<= 0 (:exit (sample/cowsay "hello"))))
+        (is string? (:out (sample/cowsay "hello"))))
 
       (testing "validate against the spec of the original function"
         (sample/cowsay "hello"))
@@ -47,14 +48,18 @@
 
       (testing "can ensure all invocations are conforming"
         (doall ; Ironically, exercise is lazy
-          (spec/exercise-fn `sample/some-fun)))))
+          (spec/exercise-fn `sample/some-fun))
+        (is (conforming sample/cowsay ::sample/fun-greeting)))))
 
   (testing "stub functions"
     (with-stubs [clojure.java.shell/sh]
 
-      (testing "doesn't need a spec to track calls"
+      (testing "return nil"
+        (is (nil? (sample/some-fun "hello" "world"))))
+
+      (testing "don't need a spec"
         (sample/some-fun "hello" "world")
-        (is (= [["cowsay" "hello, world"]] (calls clojure.java.shell/sh))))))
+        (is (conforming clojure.java.shell/sh "cowsay" ::sample/fun-greeting)))))
 
   (testing "spy functions"
     (with-spies [sample/greet]

@@ -58,7 +58,8 @@ Mocking a function prevents the original function from being called, which is us
   (with-mocks [sample/cowsay]
 
     (testing "return a value generated from the spec"
-      (spec/valid? string? (:out (sample/cowsay "hello"))))
+      (is (>= 0 (:exit (sample/cowsay "hello"))))
+      (is string? (:out (sample/cowsay "hello"))))
 
     (testing "validate against the spec of the original function"
       (sample/cowsay "hello")
@@ -78,38 +79,47 @@ Mocking a function prevents the original function from being called, which is us
 
 ### Conforming Matcher
 
-You can use `calls` to get list of arguments for all the invocations of any _Specific_ test double. While easy to understand and extensible, this approach will not work reliably with random values generated from specs. For this, you can use the `conforming` matcher like so:
+You can use `calls` to get list of arguments for all the invocations of any _Specific_ mock function. While easy to understand and extensible, this approach will not work reliably with random values generated from specs. For this, you can use the `conforming` matcher like so:
 
 ```clojure
 (testing "conforming matcher"
-  (spec/def ::nice-greeting (spec/+ string?))
-  (with-mocks [sample/cowsay sample/greet]
+  (spec/def ::h-word #(string/starts-with? % "h"))
+  (with-mocks [sample/cowsay]
 
-    (testing "when called with exact value"
-      (sample/greet "hello" ["world"]) 
-      (is (conforming sample/greet "hello" ["world"])))
+    (testing "matches with exact values"
+      (sample/some-fun "hello" "world") 
+      (is (conforming sample/cowsay "hello, world")))
 
-    (testing "when called with a spec to validate the argument"
-      (sample/greet "hello" ["world"]) ; Replace with a generative example
-      (is (conforming sample/greet "hello" ::nice-greeting)))))
+    (testing "can use a custom spec to validate an argument"
+      (sample/some-fun "hello" "world")
+      (sample/some-fun "hello" "larry")
+      (is (conforming sample/cowsay ::h-word)))
+
+    (testing "can ensure all invocations are conforming"
+      (doall ; Ironically, exercise is lazy
+        (spec/exercise-fn `sample/some-fun))
+      (is (conforming sample/cowsay ::sample/fun-greeting)))))
 ```
 
-The conforming matcher works with mocks, stubs, and spies. You can use any spec that you want to verify the arguments: Either ones declared in the test or specs in another namespace, like the ones that are used in the code under test.
-
-The conforming matcher is also handy when you need to verify invocations that include (or are derived from) generated data returned from a mock or stub.
+The conforming matcher is also handy when you need to verify invocations that include generated data returned from a mock or stub. You can use any spec that you want to verify the arguments. You can also mix specs and exact values in a single call.
 
 ### Stub Functions
 
-Stub functions are more lenient than mocks, not requiring the function to have a spec. This is useful when mocking out interactions with functions you did not write. Stub functions always return nil.
+Stub functions are more lenient than mocks, not requiring the function to have a spec. Stub functions always return nil.
 
 ```clojure
-  (testing "stub functions"
-    (with-stubs [spit]
+(testing "stub functions"
+  (with-stubs [clojure.java.shell/sh]
 
-      (testing "doesn't need a spec to track calls"
-        (sample/some-fun "hello" "world")
-        (is (= [["fun.txt" "hello, world"]] (calls spit))))))
+    (testing "return nil"
+      (is (nil? (sample/some-fun "hello" "world"))))
+
+    (testing "don't need a spec"
+      (sample/some-fun "hello" "world")
+      (is (conforming clojure.java.shell/sh "cowsay" ::sample/fun-greeting)))))
 ```
+
+Just as with mocks, when using the conforming matcher on a stub, you can use specs, exact values, or a mixture of the two
 
 ### Spy Functions
 
@@ -117,31 +127,35 @@ Spy functions call through to the original function, but still record the calls 
 
 ```clojure
   (testing "spy functions"
-    (with-spies [sample/some-fun]
+    (with-spies [sample/greet]
 
       (testing "calls through to the original function"
-        (sample/some-fun "Hello" "World")
-        (is (= [["Hello" "World"]] (calls sample/some-fun)))
-        (is (= "Hello World" (slurp "fun.txt"))))))
+        (is (= "Hello, World!" (sample/greet "Hello" ["World!"])))
+        (is (= [["Hello" ["World!"]]] (calls sample/greet))))))
 ```
-In practice, spies in _Specific_ work a lot like [clojure.spec/instrument](https://clojure.github.io/clojure/branch-master/clojure.spec-api.html#clojure.spec.test/instrument), expect that they are scoped only to particular forms rather than being a global mutation of the function.
+In practice, spies in _Specific_ work a lot like the default behavior of [clojure.spec/instrument](https://clojure.github.io/clojure/branch-master/clojure.spec-api.html#clojure.spec.test/instrument), except that they are scoped only to the forms in the `with-spies` macro.
 
 ### Generator Overrides
 
-Sometimes, within the scope of a test (or a group of tests) it makes sense to override the generator for a spec. Maybe you want to test a specific range of values, or just have a function return one value. To do that with _Specific_ you can use the `with-gens` macro:
+Sometimes, within the scope of a test (or a group of tests) it makes sense to override the generator for a spec. For example, you want to test a more specific range of values, or have a function return a single value. To do that with _Specific_ you can use the `with-gens` macro:
 
 ```clojure
-  (testing "with-gens"
-    (with-mocks [sample/some-fun]
+(testing "generator overrides"
+  (with-mocks [sample/cowsay sample/greet]
 
-      (testing "can temporarily replace the generator for a spec"
-        (with-gens [::sample/fun-greeting #{"hello!"}]
-          (is (= "hello!" (sample/some-fun "hello")))))
+    (testing "can temporarily replace the generator for a spec using a predicate"
+      (with-gens [::sample/fun-greeting #{"hello!"}]
+        (is (= "hello!" (sample/greet "hello" [])))))
 
-      (testing "can also use an existing spec's generator"
-        (with-gens [::sample/fun-greeting ::sample/number]
-          (is (number? (sample/some-fun "hello")))))))
+    (testing "can replace the generator for a nested value"
+      (with-gens [::sample/exit #{0}]
+        (is (= 0 (:exit (sample/cowsay "hello"))))))
+
+    (testing "can use another spec's generator"
+      (with-gens [::sample/out ::sample/fun-greeting]
+        (is (string? (sample/some-fun "hello"))))))))
 ```
+
 Since with-gens redefines the generator for a spec, and not an entire function, you can use to specify a portion of an otherwise default generated return value (a single nested `:phone-number` value in an entity map, for example).
 
 ## License
