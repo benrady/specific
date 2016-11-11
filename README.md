@@ -81,7 +81,7 @@ Mocking a function prevents the original function from being called, which is us
 
 ### Conforming Matcher
 
-You can use `calls` to get list of arguments for all the invocations of any _Specific_ mock function. While easy to understand and extensible, this approach will not work reliably with random values generated from specs. For this, you can use the `conforming` matcher like so:
+You can use `specific.core/calls` to get list of arguments for all the invocations of any _Specific_ mock function. While easy to understand and extensible, this approach will not work reliably with random values generated from specs. For this, you can use `specific.core/conforming` like so:
 
 ```clojure
 (testing "conforming matcher"
