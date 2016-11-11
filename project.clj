@@ -1,4 +1,4 @@
-(defproject com.benrady/specific "0.2.0"
+(defproject com.benrady/specific "0.3.0"
   :url "https://github.com/benrady/specific"
   :description "Generate test doubles using clojure.spec"
   :profiles {:dev 
