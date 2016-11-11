@@ -14,7 +14,7 @@ _Specific_ depends on Clojure 1.9 (or 1.8 with the [clojure.spec backport](https
 
 ```clojure
 (defproject sample
-  :profiles {:dev {:plugins [[com.benrady/specific "0.1.0"]]}})
+  :profiles {:dev {:plugins [[com.benrady/specific "0.3.0"]]}})
 ```
 
 ## Usage
