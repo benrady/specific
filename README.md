@@ -67,7 +67,8 @@ You can replace a list of functions with mock functions using the `specific.core
 
     (testing "validate against the spec of the original function"
       (sample/cowsay "hello")
-      (spec/exercise-fn `sample/cowsay))
+      (doall ; Ironically, exercise is lazy
+        (spec/exercise-fn `sample/cowsay))
 
       ; (sample/cowsay 1)
       ; val: 1 fails spec: :specific.sample/fun-greeting at: [:args 0] predicate: string?
