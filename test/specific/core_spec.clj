@@ -68,6 +68,21 @@
         (is (= "Hello, World!" (sample/greet "Hello" ["World!"])))
         (is (= [["Hello" ["World!"]]] (calls sample/greet))))))
 
+  (testing "generating test data"
+    (spec/def ::word (spec/and string? #(re-matches #"\w+" %)))
+    (spec/def ::short-string (spec/and ::word #(> (count %) 2) #(< (count %) 5)))
+
+    (testing "Returns a constant, conforming value for a given spec"
+      (is (= "koI" (generate ::short-string)))
+      (is (spec/valid? ::short-string (generate ::short-string))))
+
+    (testing "can override specs"
+      (is (= "word" (generate ::short-string ::word #{"word"}))))
+
+    (testing "uses with-gens overrides too"
+      (with-gens [::word #{"word"}]
+        (is (= "word" (generate ::short-string))))))
+
   (testing "generator overrides"
     (with-mocks [sample/cowsay sample/greet]
 

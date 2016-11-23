@@ -1,8 +1,8 @@
-(defproject com.benrady/specific "0.3.0"
+(defproject com.benrady/specific "0.4.0"
   :url "https://github.com/benrady/specific"
   :description "Generate mocks and other test doubles using clojure.spec"
   :profiles {:dev 
-             {:plugins [[com.jakemccrary/lein-test-refresh "0.17.0"]]
+             {:plugins [[com.jakemccrary/lein-test-refresh "0.18.0"]]
               :dependencies [[org.clojure/clojure "1.8.0"]
                              [clojure-future-spec "1.9.0-alpha13"]
                              [pjstadig/humane-test-output "0.8.1"]
@@ -21,6 +21,7 @@
   :test-refresh {:growl false
                  :notify-on-success false
                  :quiet true
+                 :stack-trace-depth 25
                  :changes-only false
                  :watch-dirs ["src" "test"]
                  :refresh-dirs ["src" "test"]})

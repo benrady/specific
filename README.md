@@ -53,7 +53,7 @@ _Specific_ works best with functions that have clojure.spec [definitions](http:/
 
 ### Mock Functions
 
-Mocking a function prevents the original function from being called, which is useful when you want to prevent side effects in a test, but still want to ensure it was invoked properly. Mocked functions validate their arguments against the specs defined for the original function. 
+Mocking a function prevents the original function from being called, which is useful when you want to prevent side effects in a test, but still want to ensure it was invoked properly. Mocked functions validate their arguments against the specs defined for the original function, and return data generated from the spec. 
 
 You can replace a list of functions with mock functions using the `specific.core/with-mocks` macro, like so:
 
@@ -66,9 +66,7 @@ You can replace a list of functions with mock functions using the `specific.core
       (is string? (:out (sample/cowsay "hello"))))
 
     (testing "validate against the spec of the original function"
-      (sample/cowsay "hello")
-      (doall ; Ironically, exercise is lazy
-        (spec/exercise-fn `sample/cowsay))
+      (sample/cowsay "hello"))
 
       ; (sample/cowsay 1)
       ; val: 1 fails spec: :specific.sample/fun-greeting at: [:args 0] predicate: string?
@@ -138,7 +136,31 @@ Spy functions call through to the original function, but still record the calls 
       (is (= "Hello, World!" (sample/greet "Hello" ["World!"])))
       (is (= [["Hello" ["World!"]]] (calls sample/greet))))))
 ```
+
 In practice, spies in _Specific_ work a lot like the default behavior of [clojure.spec/instrument](https://clojure.github.io/clojure/branch-master/clojure.spec-api.html#clojure.spec.test/instrument), except that they are scoped only to the forms in the `with-spies` macro.
+
+### Generated data
+
+You can use specs to generate test data, optionally overriding certain specs to produce different combinations of values.
+
+```clojure
+  (testing "generating test data"
+    (spec/def ::word (spec/and string? #(re-matches #"\w+" %)))
+    (spec/def ::short-string (spec/and ::word #(> (count %) 2) #(< (count %) 5)))
+
+    (testing "Returns a constant, conforming value for a given spec"
+      (is (= "koI" (generate ::short-string)))
+      (is (spec/valid? ::short-string (generate ::short-string))))
+
+    (testing "can override specs"
+      (is (= "word" (generate ::short-string ::word #{"word"}))))
+
+    (testing "uses with-gens overrides too"
+      (with-gens [::word #{"word"}]
+        (is (= "word" (generate ::short-string))))))
+``
+
+Unlike the regular test.check generator, data generated in _Specific_ test doubles is deterministic. This is true for both the `generate` function and mocks. This means the values generated will not change unless spec itself changes. Whether or not you depend on this consistency is up to you.
 
 ### Generator Overrides
 
@@ -169,6 +191,12 @@ _Specific_ gets along well with the following tools:
   * [lein-test-refresh](https://github.com/jakemcc/lein-test-refresh) by [Jake McCrary](http://jakemccrary.com/)
   * [humane-test-output](https://github.com/pjstadig/humane-test-output) by Paul Stadig
   * [test.chuck](https://github.com/gfredericks/test.chuck) by [Gary Fredericks](http://gfredericks.com/)
+
+## Changelog
+
+0.4.0 
+  * Generated values are now deterministic
+  * Added core/generate to generate test data
 
 ## License
 

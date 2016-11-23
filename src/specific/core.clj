@@ -1,12 +1,23 @@
 (ns specific.core
   (:require [clojure.spec :as spec]
-            [specific.matchers :as matchers]
-            [specific.test-double :as test-double]))
+            [specific
+             [gene :as gene]
+             [matchers :as matchers]
+             [test-double :as test-double]]))
 
 (def calls matchers/calls)
 (def conforming matchers/conforming)
 
+; FIXME should be able to extract some duplication here
+
+(defn generate [spec & bindings]
+  "Generate test data given a spec and optional additional generator overrides"
+  (let [new-gens (zipmap (take-nth 2 bindings) 
+                         (map (fn [b#] #(spec/gen b#)) (take-nth 2 (next bindings))))]
+    (gene/det-sample spec (merge test-double/*gen-overrides* new-gens))))
+
 (defmacro with-gens [bindings & body]
+  "Evalutes forms with temporary replacements for generators"
   `(let [new-gens# (zipmap (take-nth 2 ~bindings) 
                            (map (fn [b#] #(spec/gen b#)) (take-nth 2 (next ~bindings))))]
      (binding [specific.test-double/*gen-overrides* (merge specific.test-double/*gen-overrides* new-gens#)]

@@ -62,8 +62,7 @@
 (defn- validate-and-generate [fn-spec args]
   (when-let [args-spec (:args fn-spec)]
     (check-args (spec-name fn-spec) args-spec args))
-  (gene/static-sample (:ret fn-spec) *gen-overrides*)
-  )
+  (gene/det-sample (:ret fn-spec) *gen-overrides*))
 
 (defn- report-no-spec [fn-sym fn-spec]
   (report-failure "No clojure.spec defined" (str "clojure.spec for " fn-sym) fn-spec))
