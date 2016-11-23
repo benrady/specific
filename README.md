@@ -1,6 +1,6 @@
 # Specific
 
-Generate test doubles using clojure.spec
+Generate mocks and other test doubles using clojure.spec
 
 ## Why?
 
@@ -19,13 +19,15 @@ _Specific_ depends on Clojure 1.9 (or 1.8 with the [clojure.spec backport](https
 
 ## Usage
 
-To show you how to use _Specific_ let's assume you have three interdependent functions you'd like to test. One of them, `cowsay`, executes a shell command which might not be available in all environments.
+To show you how to use _Specific_, let's assume you have three interdependent functions you'd like to test. One of them, `cowsay`, executes a shell command which might not be available in all environments.
 
 ```clojure
-(ns sample)
+(ns sample
+  (:require [clojure.java.shell :as shell]
+            [clojure.string :as string]))
 
 (defn greet [pre sufs]
-  (str pre ", " (string/join ", " sufs)))
+  (string/join ", " (cons pre sufs)))
 
 (defn cowsay [msg]
   (shell/sh "cowsay" msg)) ; Fails in some environments
@@ -53,6 +55,8 @@ _Specific_ works best with functions that have clojure.spec [definitions](http:/
 
 Mocking a function prevents the original function from being called, which is useful when you want to prevent side effects in a test, but still want to ensure it was invoked properly. Mocked functions validate their arguments against the specs defined for the original function. 
 
+You can replace a list of functions with mock functions using the `specific.core/with-mocks` macro, like so:
+
 ```clojure
 (testing "mock functions"
   (with-mocks [sample/cowsay]
@@ -63,7 +67,8 @@ Mocking a function prevents the original function from being called, which is us
 
     (testing "validate against the spec of the original function"
       (sample/cowsay "hello")
-      (spec/exercise-fn `sample/cowsay))
+      (doall ; Ironically, exercise is lazy
+        (spec/exercise-fn `sample/cowsay))
 
       ; (sample/cowsay 1)
       ; val: 1 fails spec: :specific.sample/fun-greeting at: [:args 0] predicate: string?
@@ -79,7 +84,7 @@ Mocking a function prevents the original function from being called, which is us
 
 ### Conforming Matcher
 
-You can use `calls` to get list of arguments for all the invocations of any _Specific_ mock function. While easy to understand and extensible, this approach will not work reliably with random values generated from specs. For this, you can use the `conforming` matcher like so:
+You can use `specific.core/calls` to get list of arguments for all the invocations of any _Specific_ mock function. While easy to understand and extensible, this approach will not work reliably with random values generated from specs. For this, you can use `specific.core/conforming` like so:
 
 ```clojure
 (testing "conforming matcher"
@@ -126,12 +131,12 @@ Just as with mocks, when using the conforming matcher on a stub, you can use spe
 Spy functions call through to the original function, but still record the calls and enforce the constraints in the function's spec.
 
 ```clojure
-  (testing "spy functions"
-    (with-spies [sample/greet]
+(testing "spy functions"
+  (with-spies [sample/greet]
 
-      (testing "calls through to the original function"
-        (is (= "Hello, World!" (sample/greet "Hello" ["World!"])))
-        (is (= [["Hello" ["World!"]]] (calls sample/greet))))))
+    (testing "calls through to the original function"
+      (is (= "Hello, World!" (sample/greet "Hello" ["World!"])))
+      (is (= [["Hello" ["World!"]]] (calls sample/greet))))))
 ```
 In practice, spies in _Specific_ work a lot like the default behavior of [clojure.spec/instrument](https://clojure.github.io/clojure/branch-master/clojure.spec-api.html#clojure.spec.test/instrument), except that they are scoped only to the forms in the `with-spies` macro.
 
@@ -156,7 +161,14 @@ Sometimes, within the scope of a test (or a group of tests) it makes sense to ov
         (is (string? (sample/some-fun "hello"))))))))
 ```
 
-Since with-gens redefines the generator for a spec, and not an entire function, you can use to specify a portion of an otherwise default generated return value (a single nested `:phone-number` value in an entity map, for example).
+Since with-gens redefines the generator for a spec, and not an entire function, you can use it to specify a portion of an otherwise default generated return value (a single nested `:phone-number` value in an entity map, for example).
+
+## Friends and Relations
+
+_Specific_ gets along well with the following tools:
+  * [lein-test-refresh](https://github.com/jakemcc/lein-test-refresh) by [Jake McCrary](http://jakemccrary.com/)
+  * [humane-test-output](https://github.com/pjstadig/humane-test-output) by Paul Stadig
+  * [test.chuck](https://github.com/gfredericks/test.chuck) by [Gary Fredericks](http://gfredericks.com/)
 
 ## License
 
