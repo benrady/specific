@@ -158,7 +158,7 @@ You can use specs to generate test data, optionally overriding certain specs to 
     (testing "uses with-gens overrides too"
       (with-gens [::word #{"word"}]
         (is (= "word" (generate ::short-string))))))
-``
+```
 
 Unlike the regular test.check generator, data generated in _Specific_ test doubles is deterministic. This is true for both the `generate` function and mocks. This means the values generated will not change unless spec itself changes. Whether or not you depend on this consistency is up to you.
 
