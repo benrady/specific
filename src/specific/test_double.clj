@@ -1,8 +1,8 @@
 (ns specific.test-double
-  (:require [clojure.string :as string]
+  (:require [specific.gene :as gene]
+            [clojure.string :as string]
             [clojure.test :as ctest]
             [clojure.spec.test :as stest]
-            [clojure.spec.gen :as gen]
             [clojure.spec :as spec]))
 
 (def ^:dynamic *gen-overrides* {})
@@ -62,7 +62,8 @@
 (defn- validate-and-generate [fn-spec args]
   (when-let [args-spec (:args fn-spec)]
     (check-args (spec-name fn-spec) args-spec args))
-  (first (gen/sample (spec/gen (:ret fn-spec) *gen-overrides*) 1)))
+  (gene/static-sample (:ret fn-spec) *gen-overrides*)
+  )
 
 (defn- report-no-spec [fn-sym fn-spec]
   (report-failure "No clojure.spec defined" (str "clojure.spec for " fn-sym) fn-spec))
