@@ -24,7 +24,7 @@
   "Get the recorded calls from a test double"
   (if-let [calls (:specific-calls (meta spyf))]
     (get (deref calls) ctest/*testing-contexts* [])
-    {:msg (str spyf " is not a test double")}))
+    (str spyf " is not a test double")))
 
 (defn comparisons [test-double expected-args]
   (for [actual (calls test-double)]
