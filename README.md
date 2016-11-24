@@ -81,7 +81,7 @@ You can replace a list of functions with mock functions using the `specific.core
 
 ### Test Conforming Arguments
 
-You can use `specific.core/calls` to get list of arguments for all the invocations of any _Specific_ mock function. While easy to understand and extensible, this approach would require that you use generated values in your tests. Instead, you can assert that the arguments passed to a function conform to a spec, using `specific.core/args-conform`:
+If you want to make assertions about how a particular mock was invoked, you can use `specific.core/calls` to get list of arguments for all the invocations of any _Specific_ mock function. While easy to understand and extensible, this approach would require that you use generated values in your tests. Instead, you can assert that the arguments passed to a function conform to a spec, using `specific.core/args-conform`:
 
 ```clojure
 (testing "args-conform matcher"
