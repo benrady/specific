@@ -13,54 +13,54 @@
 (use-fixtures :each report-fixture)
 (deftest matchers
 
-  (testing "conforming"
+  (testing "args-conform"
     (let [stub (test-double/stub-fn 'specific.sample/flip-two)]
 
-      (testing "when testing with the conforming matcher"
+      (testing "when testing with the args-conform matcher"
         (with-redefs [clojure.test/do-report failure-fn]
-          (testing "reports the non conforming argument"
+          (testing "reports the non args-conform argument"
                    (stub 2 10)
                    (stub 3 11)
-                   (is (conforming stub 2 ::number))
+                   (is (args-conform stub 2 ::number))
                    (assert-report {:type :fail 
                                    :message "Invocation of stub did not conform to (2 :specific.matchers-spec/number)"
                                    :expected '(2 ::number)
                                    :actual [3 11]}))
 
           (testing "ensures the function was invoked"
-            (is (conforming stub 20 10))
+            (is (args-conform stub 20 10))
             (assert-report {:type :fail 
                             :message "Invocation of stub did not conform to (20 10)"
                             :expected '(20 10)
                             :actual "No Calls"})
             )))
 
-      (testing "first-conforming"
-        (testing "returns nil if all arguments are conforming"
+      (testing "first-args-conform"
+        (testing "returns nil if all arguments are args-conform"
           (stub 2 1)
-          (is (nil? (first-nonconforming stub [2 1]))))
+          (is (nil? (first-nonargs-conform stub [2 1]))))
 
-        (testing "returns the first non-conforming argument"
+        (testing "returns the first non-args-conform argument"
           (stub 2 1)
           (stub 3 1)
-          (is (= [3 1] (first-nonconforming stub [2 1])))))
+          (is (= [3 1] (first-nonargs-conform stub [2 1])))))
 
-      (testing "not conforming unless all calls conforming"
+      (testing "not args-conform unless all calls args-conform"
         (stub 2 1)
         (stub 3 1)
-        (is (not (conforming stub 2 1))))
+        (is (not (args-conform stub 2 1))))
 
-      (testing "conforming if all calls conforming"
+      (testing "args-conform if all calls args-conform"
         (stub 2 1)
         (stub 3 1)
-        (is (conforming stub ::number 1)))
+        (is (args-conform stub ::number 1)))
 
-      (testing "not conforming if no calls"
-        (is (not (conforming stub))))
+      (testing "not args-conform if no calls"
+        (is (not (args-conform stub))))
 
-      (testing "not conforming if argument count differs"
+      (testing "not args-conform if argument count differs"
         (stub 2)
-        (is (not (conforming stub 2 1))))))
+        (is (not (args-conform stub 2 1))))))
 
   (testing "calls"
 

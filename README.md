@@ -80,31 +80,31 @@ You can replace a list of functions with mock functions using the `specific.core
       (is (= [["hello"] ["world"]] (calls sample/cowsay))))))
 ```
 
-### Conforming Matcher
+### Test args-conform Arguments
 
-You can use `specific.core/calls` to get list of arguments for all the invocations of any _Specific_ mock function. While easy to understand and extensible, this approach will not work reliably with random values generated from specs. For this, you can use `specific.core/conforming` like so:
+You can use `specific.core/calls` to get list of arguments for all the invocations of any _Specific_ mock function. While easy to understand and extensible, this approach would require that you use generated values in your tests. Instead, you can assert that the arguments passed to a function conform to a spec, using `specific.core/args-conform`:
 
 ```clojure
-(testing "conforming matcher"
+(testing "args-conform matcher"
   (spec/def ::h-word #(string/starts-with? % "h"))
   (with-mocks [sample/cowsay]
 
     (testing "matches with exact values"
       (sample/some-fun "hello" "world") 
-      (is (conforming sample/cowsay "hello, world")))
+      (is (args-conform sample/cowsay "hello, world")))
 
     (testing "can use a custom spec to validate an argument"
       (sample/some-fun "hello" "world")
       (sample/some-fun "hello" "larry")
-      (is (conforming sample/cowsay ::h-word)))
+      (is (args-conform sample/cowsay ::h-word)))
 
-    (testing "can ensure all invocations are conforming"
+    (testing "can ensure all invocations are args-conform"
       (doall ; Ironically, exercise is lazy
         (spec/exercise-fn `sample/some-fun))
-      (is (conforming sample/cowsay ::sample/fun-greeting)))))
+      (is (args-conform sample/cowsay ::sample/fun-greeting)))))
 ```
 
-The conforming matcher is also handy when you need to verify invocations that include generated data returned from a mock or stub. You can use any spec that you want to verify the arguments. You can also mix specs and exact values in a single call.
+The args-conform matcher is also handy when you need to verify invocations that include generated data returned from a mock or stub. You can use any spec that you want to verify the arguments. You can also mix specs and exact values in a single call.
 
 ### Stub Functions
 
@@ -119,10 +119,10 @@ Stub functions are more lenient than mocks, not requiring the function to have a
 
     (testing "don't need a spec"
       (sample/some-fun "hello" "world")
-      (is (conforming clojure.java.shell/sh "cowsay" ::sample/fun-greeting)))))
+      (is (args-conform clojure.java.shell/sh "cowsay" ::sample/fun-greeting)))))
 ```
 
-Just as with mocks, when using the conforming matcher on a stub, you can use specs, exact values, or a mixture of the two
+Just as with mocks, when using the args-conform matcher on a stub, you can use specs, exact values, or a mixture of the two
 
 ### Spy Functions
 
@@ -148,7 +148,7 @@ You can use specs to generate test data, optionally overriding certain specs to 
     (spec/def ::word (spec/and string? #(re-matches #"\w+" %)))
     (spec/def ::short-string (spec/and ::word #(> (count %) 2) #(< (count %) 5)))
 
-    (testing "Returns a constant, conforming value for a given spec"
+    (testing "Returns a constant, args-conform value for a given spec"
       (is (= "koI" (generate ::short-string)))
       (is (spec/valid? ::short-string (generate ::short-string))))
 

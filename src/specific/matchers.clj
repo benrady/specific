@@ -30,22 +30,22 @@
   (for [actual (calls test-double)]
     [actual (match-args expected-args actual)]))
 
-(defn first-nonconforming [test-double expected-args]
+(defn first-nonargs-conform [test-double expected-args]
   (first (first (filter (fn [[a b]] (not= a b)) (comparisons test-double expected-args)))))
 
-(defn conforming [test-double & expected-args]
+(defn args-conform [test-double & expected-args]
   (and 
     (seq (calls test-double))
-    (nil? (first-nonconforming test-double expected-args))))
+    (nil? (first-nonargs-conform test-double expected-args))))
 
-(defmethod ctest/assert-expr 'conforming [msg form]
+(defmethod ctest/assert-expr 'args-conform [msg form]
   `(if ~form
      (ctest/do-report {:type :pass :message ~msg})
      (let [double-fn# (nth '~form 1)
            expected-args# (nthrest '~form 2)
-           nonconforming-args# (first-nonconforming ~(nth form 1) (nthrest '~form 2))
-           explain# (match-args expected-args# nonconforming-args#)]
+           nonargs-conform-args# (first-nonargs-conform ~(nth form 1) (nthrest '~form 2))
+           explain# (match-args expected-args# nonargs-conform-args#)]
        (ctest/do-report {:type :fail 
                          :message (or ~msg (str "Invocation of " double-fn# " did not conform to " expected-args#))
                          :expected expected-args#
-                         :actual (or nonconforming-args# "No Calls")}))))
+                         :actual (or nonargs-conform-args# "No Calls")}))))
