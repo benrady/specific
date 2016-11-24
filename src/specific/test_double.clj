@@ -5,16 +5,8 @@
             [clojure.spec.test :as stest]
             [clojure.spec :as spec]))
 
-(defn report-fail [m]
+(defn- report-fail [m]
   (ctest/do-report (assoc m :type :fail)))
-
-(defn report-failure [msg expected actual]
-  (report-fail {
-           ;:file "file" :line "line" 
-           :message msg 
-           :expected expected 
-           :actual actual
-           }))
 
 (defn- record-calls [calls & args]
   (let [arg-vec (vec (or args []))]
@@ -62,11 +54,20 @@
     (check-args (spec-name fn-spec) args-spec args))
   (gene/det-sample (:ret fn-spec)))
 
-(defn- report-no-spec [fn-sym fn-spec]
-  (report-failure "No clojure.spec defined" (str "clojure.spec for " fn-sym) fn-spec))
-
 (defn- add-meta [f calls]
   (with-meta f {:specific-calls calls}))
+
+(defn- no-spec-report [fn-sym]
+  {:type :fail 
+   :message "No clojure.spec defined" 
+   :expected (str "clojure.spec for " fn-sym) 
+   :actual nil})
+
+(defn- no-ret-spec-report [fn-sym]
+  {:type :fail 
+   :message (str "No :ret spec defined")
+   :expected (str "clojure.spec at [:ret] for " fn-sym) 
+   :actual nil})
 
 (defn spy-fn [f]
   (let [fn-spec (spec/get-spec f) 
@@ -85,7 +86,7 @@
         calls (atom {})]
     (add-meta (let [call-fn (partial record-calls calls)]
                 (if (nil? fn-spec)
-                  (do 
-                    (report-no-spec fn-sym fn-spec)
-                    call-fn)
-                  (comp (partial validate-and-generate fn-spec) call-fn))) calls)))
+                  (no-spec-report fn-sym)
+                  (if (nil? (:ret fn-spec))
+                    (no-ret-spec-report fn-sym)
+                    (comp (partial validate-and-generate fn-spec) call-fn)))) calls)))

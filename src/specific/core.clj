@@ -25,10 +25,14 @@
   `(with-redefs ~(vec (mapcat (fn [v] [v `(specific.test-double/spy-fn ~v)]) vs))
      (do ~@body)))
 
+; FIXME My macro-fu is not strong enough to remove the duplication here
 (defmacro with-mocks [vs & body]
   "Temporarily redefines vars with functions that validate against clojure.spec."
-  `(with-redefs ~(vec (mapcat (fn [v] [v `(specific.test-double/mock-fn (var ~v))]) vs))
-     (do ~@body)))
+  `(let [mock-fns# ~(vec (map (fn [v] `(specific.test-double/mock-fn (var ~v))) vs))]
+     (if-let [first-error# (first (filter map? mock-fns#))]
+       (clojure.test/do-report first-error#)
+       (with-redefs ~(vec (mapcat (fn [v] [v `(specific.test-double/mock-fn (var ~v))]) vs))
+         (do ~@body)))))
 
 (defmacro with-stubs [vs & body]
   "Temporarily redefines vars with functions that records arguments and return nil"

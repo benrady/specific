@@ -196,6 +196,8 @@ _Specific_ gets along well with the following tools:
 
 0.5.0 
   * Renamed conforming to args-conform
+  * No longer evaluating forms when a mock cannot be created
+  * Better failure messages when missing a :ret spec in a mock
 
 0.4.0 
   * Generated values are now deterministic
