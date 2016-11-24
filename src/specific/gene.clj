@@ -13,6 +13,5 @@
   "Returns a deterministic sample generated from the spec"
   ([spec] (det-sample spec *gen-overrides*))
   ([spec overrides]
-   (with-redefs [random/make-random (fn [& _] det-rng)]
-     (rose/root (gen/call-gen (spec/gen spec (merge *gen-overrides* overrides)) det-rng 0)))))
+   (rose/root (gen/call-gen (spec/gen spec (merge *gen-overrides* overrides)) det-rng 0))))
      
