@@ -10,12 +10,11 @@ _Specific_ can generate mock functions from [clojure.spec](http://clojure.org/ab
 
 ## Dependencies
 
-_Specific_ depends on Clojure 1.9 (or 1.8 with the [clojure.spec backport](https://github.com/tonsky/clojure-future-spec)). Add the following to your project.clj:
+_Specific_ depends on Clojure 1.9 (or 1.8 with the [clojure.spec backport](https://github.com/tonsky/clojure-future-spec)) and [test.check](https://github.com/clojure/test.check) version 0.9.0.
 
-```clojure
-(defproject sample
-  :profiles {:dev {:plugins [[com.benrady/specific "0.3.0"]]}})
-```
+You can find the latest version in the Clojars repository, here:
+
+[![Clojars Project](https://img.shields.io/clojars/v/com.benrady/specific.svg)](https://clojars.org/com.benrady/specific)
 
 ## Usage
 
