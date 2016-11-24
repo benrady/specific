@@ -46,7 +46,7 @@
         (sample/some-fun "hello" "larry")
         (is (args-conform sample/cowsay ::h-word)))
 
-      (testing "can ensure all invocations are args-conform"
+      (testing "can ensure all invocations are conforming"
         (doall ; Ironically, exercise is lazy
           (spec/exercise-fn `sample/some-fun))
         (is (args-conform sample/cowsay ::sample/fun-greeting)))))
@@ -72,7 +72,7 @@
     (spec/def ::word (spec/and string? #(re-matches #"\w+" %)))
     (spec/def ::short-string (spec/and ::word #(> (count %) 2) #(< (count %) 5)))
 
-    (testing "Returns a constant, args-conform value for a given spec"
+    (testing "Returns a constant, conforming value for a given spec"
       (is (= "5U6" (generate ::short-string)))
       (is (spec/valid? ::short-string (generate ::short-string))))
 

@@ -79,7 +79,7 @@ You can replace a list of functions with mock functions using the `specific.core
       (is (= [["hello"] ["world"]] (calls sample/cowsay))))))
 ```
 
-### Test args-conform Arguments
+### Test Conforming Arguments
 
 You can use `specific.core/calls` to get list of arguments for all the invocations of any _Specific_ mock function. While easy to understand and extensible, this approach would require that you use generated values in your tests. Instead, you can assert that the arguments passed to a function conform to a spec, using `specific.core/args-conform`:
 
@@ -97,7 +97,7 @@ You can use `specific.core/calls` to get list of arguments for all the invocatio
       (sample/some-fun "hello" "larry")
       (is (args-conform sample/cowsay ::h-word)))
 
-    (testing "can ensure all invocations are args-conform"
+    (testing "can ensure all invocations are conforming"
       (doall ; Ironically, exercise is lazy
         (spec/exercise-fn `sample/some-fun))
       (is (args-conform sample/cowsay ::sample/fun-greeting)))))
@@ -147,7 +147,7 @@ You can use specs to generate test data, optionally overriding certain specs to 
     (spec/def ::word (spec/and string? #(re-matches #"\w+" %)))
     (spec/def ::short-string (spec/and ::word #(> (count %) 2) #(< (count %) 5)))
 
-    (testing "Returns a constant, args-conform value for a given spec"
+    (testing "Returns a constant, conforming value for a given spec"
       (is (= "koI" (generate ::short-string)))
       (is (spec/valid? ::short-string (generate ::short-string))))
 
