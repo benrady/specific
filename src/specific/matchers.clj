@@ -48,4 +48,4 @@
        (ctest/do-report {:type :fail 
                          :message (or ~msg (str "Invocation of " double-fn# " did not conform to " expected-args#))
                          :expected expected-args#
-                         :actual (or nonargs-conform-args# "No Calls")}))))
+                         :actual (or nonargs-conform-args# (symbol "zero-invocations"))}))))

@@ -32,7 +32,7 @@
             (assert-report {:type :fail 
                             :message "Invocation of stub did not conform to (20 10)"
                             :expected '(20 10)
-                            :actual "No Calls"})
+                            :actual 'zero-invocations})
             )))
 
       (testing "first-args-conform"

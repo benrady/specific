@@ -194,6 +194,9 @@ _Specific_ gets along well with the following tools:
 
 ## Changelog
 
+0.5.0 
+  * Renamed conforming to args-conform
+
 0.4.0 
   * Generated values are now deterministic
   * Added core/generate to generate test data
