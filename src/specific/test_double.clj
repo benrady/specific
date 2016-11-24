@@ -5,8 +5,6 @@
             [clojure.spec.test :as stest]
             [clojure.spec :as spec]))
 
-(def ^:dynamic *gen-overrides* {})
-
 (defn report-fail [m]
   (ctest/do-report (assoc m :type :fail)))
 
@@ -62,7 +60,7 @@
 (defn- validate-and-generate [fn-spec args]
   (when-let [args-spec (:args fn-spec)]
     (check-args (spec-name fn-spec) args-spec args))
-  (gene/det-sample (:ret fn-spec) *gen-overrides*))
+  (gene/det-sample (:ret fn-spec)))
 
 (defn- report-no-spec [fn-sym fn-spec]
   (report-failure "No clojure.spec defined" (str "clojure.spec for " fn-sym) fn-spec))

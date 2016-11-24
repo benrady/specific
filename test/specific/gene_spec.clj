@@ -8,7 +8,7 @@
 
 (deftest gene
   (testing "ensures custom specs are consistent"
-    (is (= "01A" (gene/det-sample ::three-string))))
+    (is (= "zW3" (gene/det-sample ::three-string))))
 
   (testing "returns a consistent value for specs"
     (is (= "" (gene/det-sample string?)))))

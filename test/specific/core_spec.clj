@@ -73,7 +73,7 @@
     (spec/def ::short-string (spec/and ::word #(> (count %) 2) #(< (count %) 5)))
 
     (testing "Returns a constant, conforming value for a given spec"
-      (is (= "koI" (generate ::short-string)))
+      (is (= "5U6" (generate ::short-string)))
       (is (spec/valid? ::short-string (generate ::short-string))))
 
     (testing "can override specs"

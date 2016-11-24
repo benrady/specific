@@ -14,13 +14,13 @@
   "Generate test data given a spec and optional additional generator overrides"
   (let [new-gens (zipmap (take-nth 2 bindings) 
                          (map (fn [b#] #(spec/gen b#)) (take-nth 2 (next bindings))))]
-    (gene/det-sample spec (merge test-double/*gen-overrides* new-gens))))
+    (gene/det-sample spec new-gens)))
 
 (defmacro with-gens [bindings & body]
   "Evalutes forms with temporary replacements for generators"
   `(let [new-gens# (zipmap (take-nth 2 ~bindings) 
                            (map (fn [b#] #(spec/gen b#)) (take-nth 2 (next ~bindings))))]
-     (binding [specific.test-double/*gen-overrides* (merge specific.test-double/*gen-overrides* new-gens#)]
+     (binding [specific.gene/*gen-overrides* (merge specific.gene/*gen-overrides* new-gens#)]
        (do ~@body))))
 
 (defmacro with-spies [vs & body]
