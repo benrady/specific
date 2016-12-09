@@ -6,7 +6,7 @@ Generate mocks and other test doubles using clojure.spec
 
 Testing code with side effects, such as I/O, can be painful. It slows down your tests and can cause spurious failures. Mocking out these interactions is a great way to keep your tests fast and reliable.
 
-_Specific_ can generate mock functions from [clojure.spec](http://clojure.org/about/spec) definitions. It can help you make assertions about how the functions were called, or simply remove the side effect and let your spec declarations do the verification. This means it works on programs with example-based tests, [property-based](https://github.com/clojure/test.check) generative tests, or a mixture of the two.
+_Specific_ can generate mock functions from [clojure.spec](http://clojure.org/about/spec) definitions. It can help you make assertions about how the functions were called, or simply remove the side effect and let your spec declarations do the verification. This means it works on programs with example-based tests, [property-based](https://github.com/clojure/test.check) generative tests, or both.
 
 ## Dependencies
 
