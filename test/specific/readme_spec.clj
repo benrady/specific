@@ -23,7 +23,7 @@
         (sample/cowsay "hello"))
 
         ; (sample/cowsay 1)
-        ; val: 1 fails spec: :specific.sample/fun-greeting at: [:args 0] predicate: string?
+        ; val: 1 fails spec: :specific.sample/fun-greeting at: [:args :fun-greeting] predicate: string?
         ;
         ; expected: string?
         ;   actual: 1

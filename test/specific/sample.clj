@@ -17,13 +17,9 @@
 (clojure.spec/def ::fun-greeting string?)
 (clojure.spec/fdef greet :ret ::fun-greeting)
 (clojure.spec/fdef cowsay
-                   :args (clojure.spec/tuple ::fun-greeting)
+                   :args (clojure.spec/cat :fun-greeting ::fun-greeting)
                    :ret (clojure.spec/keys :req-un [::out ::exit]))
 (clojure.spec/fdef some-fun
                    :args (clojure.spec/cat :greeting ::fun-greeting
                                            :names (clojure.spec/* string?))
                    :ret string?)
-;; Deprecated
-
-(defn flip-two [a b]
-  [b a])

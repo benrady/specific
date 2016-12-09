@@ -4,9 +4,7 @@
             [clojure.spec.test :as stest]
             [clojure.spec.gen :as gen]
             [clojure.spec :as spec]
-            [clojure.string :as string]
-            [specific.test-double]
-            [specific.sample :as sample])
+            [clojure.string :as string])
   (:use [clojure.test]
         [specific.report-stub]
         [specific.core]))
@@ -14,6 +12,7 @@
 (use-fixtures :each report-fixture)
 
 (deftest core
+
   (testing "with-mocks"
     (testing "does not evaluate the body if the mock function is in error"
       (with-redefs [clojure.test/do-report failure-fn]

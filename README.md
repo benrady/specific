@@ -43,7 +43,7 @@ _Specific_ works best with functions that have clojure.spec [definitions](http:/
 (clojure.spec/def ::fun-greeting string?)
 (clojure.spec/fdef greet :ret ::fun-greeting)
 (clojure.spec/fdef cowsay
-                   :args (clojure.spec/tuple ::fun-greeting)
+                   :args (clojure.spec/cat :fun-greeting ::fun-greeting)
                    :ret (clojure.spec/keys :req-un [::out ::exit]))
 (clojure.spec/fdef some-fun
                    :args (clojure.spec/+ string?)
@@ -192,6 +192,9 @@ _Specific_ gets along well with the following tools:
   * [test.chuck](https://github.com/gfredericks/test.chuck) by [Gary Fredericks](http://gfredericks.com/)
 
 ## Changelog
+
+0.6.0
+  * More sensible error messages when you forget to mock a function
 
 0.5.0 
   * Renamed conforming to args-conform

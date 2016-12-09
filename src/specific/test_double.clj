@@ -11,7 +11,7 @@
 (defn- record-calls [calls & args]
   (let [arg-vec (vec (or args []))]
     (swap! calls update-in [ctest/*testing-contexts*] (comp vec conj) arg-vec)
-    arg-vec))
+    args))
 
 (defn- expected-msg [{:keys [path pred val reason via in] :as problem}]
   (:pred problem))

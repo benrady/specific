@@ -12,7 +12,7 @@
 (defn no-ret [a])
 
 (spec/fdef no-ret
-           :args (spec/tuple identity))
+           :args (spec/cat :arg1 identity))
 
 (use-fixtures :each report-fixture)
 (deftest test-doubles
