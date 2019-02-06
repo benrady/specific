@@ -3,7 +3,7 @@
             [clojure.test.check.rose-tree :as rose]
             [clojure.test.check :as check]
             [clojure.test.check.generators :as gen]
-            [clojure.spec :as spec]))
+            [clojure.spec.alpha :as spec]))
 
 (def ^:dynamic *gen-overrides* {})
 

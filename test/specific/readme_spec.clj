@@ -1,9 +1,9 @@
 (ns specific.readme-spec
   (:require [clojure.java.shell]
             [clojure.test :as ctest] 
-            [clojure.spec.test :as stest]
-            [clojure.spec.gen :as gen]
-            [clojure.spec :as spec]
+            [clojure.spec.test.alpha :as stest]
+            [clojure.spec.gen.alpha :as gen]
+            [clojure.spec.alpha :as spec]
             [clojure.string :as string]
             [specific.test-double]
             [specific.sample :as sample])

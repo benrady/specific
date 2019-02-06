@@ -10,7 +10,7 @@ _Specific_ can generate mock functions from [clojure.spec](http://clojure.org/ab
 
 ## Dependencies
 
-_Specific_ depends on Clojure 1.9 (or 1.8 with the [clojure.spec backport](https://github.com/tonsky/clojure-future-spec)) and [test.check](https://github.com/clojure/test.check) version 0.9.0.
+_Specific_ works with Clojure 1.10 or 1.9 (or 1.8 with the [clojure.spec backport](https://github.com/tonsky/clojure-future-spec)) and [test.check](https://github.com/clojure/test.check) version 0.9.0.
 
 You can find the latest version in the Clojars repository, here:
 
@@ -193,6 +193,9 @@ _Specific_ gets along well with the following tools:
 
 ## Changelog
 
+0.7.0
+  * No longer enforces that a spec specifies a return value when mocking a function
+
 0.6.0
   * More sensible error messages when you forget to mock a function
 
@@ -204,6 +207,16 @@ _Specific_ gets along well with the following tools:
 0.4.0 
   * Generated values are now deterministic
   * Added core/generate to generate test data
+
+## Developing
+
+The following commands run the tests against various versions of Clojure.
+
+```clojure
+lein with-profile +1.10 test
+lein with-profile +1.9 test
+lein with-profile +1.8 test
+```
 
 ## License
 

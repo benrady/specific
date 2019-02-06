@@ -1,5 +1,5 @@
 (ns specific.matchers
-  (:require [clojure.spec :as spec]
+  (:require [clojure.spec.alpha :as spec]
             [clojure.test :as ctest]))
 
 (defn- conform-or-explain [spc act]
