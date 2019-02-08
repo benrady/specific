@@ -1,5 +1,5 @@
 (ns specific.gene-spec
-  (:require [clojure.spec :as spec]
+  (:require [clojure.spec.alpha :as spec]
             [specific
              [gene :as gene]])
   (:use [clojure.test]))

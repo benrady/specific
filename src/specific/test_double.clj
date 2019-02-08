@@ -2,8 +2,8 @@
   (:require [specific.gene :as gene]
             [clojure.string :as string]
             [clojure.test :as ctest]
-            [clojure.spec.test :as stest]
-            [clojure.spec :as spec]))
+            [clojure.spec.test.alpha :as stest]
+            [clojure.spec.alpha :as spec]))
 
 (defn- report-fail [m]
   (ctest/do-report (assoc m :type :fail)))
@@ -63,12 +63,6 @@
    :expected (str "clojure.spec for " fn-sym) 
    :actual nil})
 
-(defn- no-ret-spec-report [fn-sym]
-  {:type :fail 
-   :message (str "No :ret spec defined")
-   :expected (str "clojure.spec at [:ret] for " fn-sym) 
-   :actual nil})
-
 (defn spy-fn [f]
   (let [fn-spec (spec/get-spec f) 
         calls (atom {})]
@@ -82,11 +76,11 @@
       (add-meta f calls))))
 
 (defn mock-fn [fn-sym]
-  (let [fn-spec (spec/get-spec fn-sym) 
+  (let [fn-spec (spec/get-spec fn-sym)
         calls (atom {})]
     (add-meta (let [call-fn (partial record-calls calls)]
                 (if (nil? fn-spec)
                   (no-spec-report fn-sym)
-                  (if (nil? (:ret fn-spec))
-                    (no-ret-spec-report fn-sym)
-                    (comp (partial validate-and-generate fn-spec) call-fn)))) calls)))
+                  (comp (partial validate-and-generate fn-spec) call-fn)))
+              calls)))
+

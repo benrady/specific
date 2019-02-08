@@ -1,5 +1,5 @@
 (ns specific.matchers-spec
-  (:require [clojure.spec :as spec]
+  (:require [clojure.spec.alpha :as spec]
             [specific
              [report-stub :as report-stub]
              [test-double :as test-double]
