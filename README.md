@@ -193,10 +193,8 @@ _Specific_ gets along well with the following tools:
 
 ## Changelog
 
-0.7.0
-  * No longer enforces that a spec specifies a return value when mocking a function
-
 0.6.0
+  * Support for Clojure 1.10, 1.9, and 1.8
   * More sensible error messages when you forget to mock a function
 
 0.5.0 
