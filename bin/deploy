@@ -2,8 +2,10 @@
 
 set -euo pipefail
 
+export GPG_TTY=$(tty)
+
 bindir=`dirname $0`
 
-if $bindir/lein test; then
+if $bindir/lein with-profile +1.8 test; then
   $bindir/lein deploy clojars
 fi
