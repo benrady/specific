@@ -1,4 +1,4 @@
-(defproject com.benrady/specific "0.5.1-SNAPSHOT"
+(defproject com.benrady/specific "0.6.0"
   :url "https://github.com/benrady/specific"
   :description "Generate mocks and other test doubles using clojure.spec"
   :profiles {:dev {:plugins [[com.jakemccrary/lein-test-refresh "0.23.0"]]
